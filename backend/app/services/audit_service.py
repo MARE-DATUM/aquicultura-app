@@ -59,3 +59,42 @@ class AuditService:
             query = query.filter(AuditLog.timestamp <= end_date)
         
         return query.order_by(AuditLog.timestamp.desc()).offset(skip).limit(limit).all()
+    
+    def get_audit_stats(self) -> dict:
+        """Obtém estatísticas de auditoria para dashboard"""
+        total_logs = self.db.query(AuditLog).count()
+        
+        # Agregação por ação
+        stats_acao = {}
+        for acao in AcaoAudit:
+            count = self.db.query(AuditLog).filter(AuditLog.acao == acao).count()
+            stats_acao[acao.value] = count
+        
+        # Agregação por entidade
+        entidades = self.db.query(AuditLog.entidade).distinct().all()
+        stats_entidade = {}
+        for entidade in entidades:
+            if entidade[0]:  # Verificar se não é None
+                count = self.db.query(AuditLog).filter(AuditLog.entidade == entidade[0]).count()
+                stats_entidade[entidade[0]] = count
+        
+        # Usuários mais ativos
+        from sqlalchemy import func
+        usuarios_ativos = self.db.query(
+            AuditLog.user_id,
+            func.count(AuditLog.id).label('total_acoes')
+        ).filter(
+            AuditLog.user_id.isnot(None)
+        ).group_by(AuditLog.user_id).order_by(
+            func.count(AuditLog.id).desc()
+        ).limit(5).all()
+        
+        return {
+            "total_logs": total_logs,
+            "por_acao": stats_acao,
+            "por_entidade": stats_entidade,
+            "usuarios_mais_ativos": [
+                {"user_id": user.user_id, "total_acoes": user.total_acoes}
+                for user in usuarios_ativos
+            ]
+        }

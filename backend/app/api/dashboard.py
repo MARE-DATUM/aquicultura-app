@@ -50,23 +50,23 @@ def get_dashboard_stats(
             "auditoria": audit_stats,
             "resumo": {
                 "total_projetos": projetos_stats.get("total_projetos", 0),
-                "projetos_ativos": projetos_stats.get("projetos_em_execucao", 0),
+                "projetos_ativos": projetos_stats.get("EM_EXECUCAO", 0),
                 "total_provincias_cobertas": len([p for p in mapa_data if p.get("total_projetos", 0) > 0]),
                 "total_indicadores": indicadores_stats.get("total_indicadores", 0),
-                "licencas_aprovadas": licenciamentos_stats.get("aprovados", 0),
-                "licencas_pendentes": licenciamentos_stats.get("pendentes", 0),
+                "licencas_aprovadas": licenciamentos_stats.get("por_status", {}).get("APROVADO", 0),
+                "licencas_pendentes": licenciamentos_stats.get("por_status", {}).get("PENDENTE", 0),
             },
             "kpis_18_meses": {
-                "producao_total_toneladas": indicadores_stats.get("producao_total", 0),
-                "familias_beneficiadas": indicadores_stats.get("familias_beneficiadas", 0),
-                "empregos_criados": indicadores_stats.get("empregos_criados", 0),
-                "execucao_orcamental_percentual": projetos_stats.get("execucao_orcamental_media", 0),
-                "licencas_fast_track": licenciamentos_stats.get("total_licencas", 0)
+                "producao_total_toneladas": 0,  # TODO: Implementar cálculo específico
+                "familias_beneficiadas": 0,     # TODO: Implementar cálculo específico
+                "empregos_criados": 0,          # TODO: Implementar cálculo específico
+                "execucao_orcamental_percentual": indicadores_stats.get("execucao_media_percentual", 0),
+                "licencas_fast_track": licenciamentos_stats.get("total_licenciamentos", 0)
             },
             "distribuicao_fontes": projetos_stats.get("por_fonte_financiamento", {}),
             "distribuicao_tipos": projetos_stats.get("por_tipo", {}),
             "distribuicao_estados": projetos_stats.get("por_estado", {}),
-            "evolucao_trimestral": indicadores_stats.get("evolucao_trimestral", []),
+            "evolucao_trimestral": indicadores_stats.get("por_trimestre", {}),
             "meta_data": {
                 "ultima_atualizacao": "2025-01-01T00:00:00Z",
                 "periodo_referencia": "18 meses (2024-2025)",
