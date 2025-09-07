@@ -46,11 +46,30 @@ class Projeto(ProjetoBase):
         from_attributes = True
 
 
-class ProjetoResponse(Projeto):
-    provincia: Optional[Any] = None
-    eixos_5w2h: List[Any] = []
-    indicadores: List[Any] = []
-    licenciamentos: List[Any] = []
+class ProvinciaSimple(BaseModel):
+    id: int
+    nome: str
+    
+    class Config:
+        from_attributes = True
+
+
+class ProjetoResponse(BaseModel):
+    id: int
+    nome: str
+    provincia_id: int
+    tipo: TipoProjeto
+    fonte_financiamento: FonteFinanciamento
+    estado: EstadoProjeto
+    responsavel: str
+    orcamento_previsto_kz: Decimal
+    orcamento_executado_kz: Decimal
+    data_inicio_prevista: datetime
+    data_fim_prevista: datetime
+    descricao: Optional[str] = None
+    created_at: datetime
+    updated_at: Optional[datetime] = None
+    provincia: Optional[ProvinciaSimple] = None
 
     class Config:
         from_attributes = True

@@ -121,7 +121,7 @@ class ApiService {
       }
     });
     
-    const response: AxiosResponse<Projeto[]> = await this.api.get(`/projetos?${params.toString()}`);
+    const response: AxiosResponse<Projeto[]> = await this.api.get(`/projetos/?${params.toString()}`);
     return response.data;
   }
 
@@ -131,7 +131,7 @@ class ApiService {
   }
 
   async createProjeto(projetoData: ProjetoCreate): Promise<Projeto> {
-    const response: AxiosResponse<Projeto> = await this.api.post('/projetos', projetoData);
+    const response: AxiosResponse<Projeto> = await this.api.post('/projetos/', projetoData);
     return response.data;
   }
 
@@ -168,7 +168,7 @@ class ApiService {
       }
     });
     
-    const response: AxiosResponse<Indicador[]> = await this.api.get(`/indicadores?${params.toString()}`);
+    const response: AxiosResponse<Indicador[]> = await this.api.get(`/indicadores/?${params.toString()}`);
     return response.data;
   }
 
@@ -178,7 +178,7 @@ class ApiService {
   }
 
   async createIndicador(indicadorData: IndicadorCreate): Promise<Indicador> {
-    const response: AxiosResponse<Indicador> = await this.api.post('/indicadores', indicadorData);
+    const response: AxiosResponse<Indicador> = await this.api.post('/indicadores/', indicadorData);
     return response.data;
   }
 
