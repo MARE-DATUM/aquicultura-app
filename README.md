@@ -109,6 +109,7 @@ docker-compose up -d
 - **Frontend**: http://localhost:3000
 - **Backend API**: http://localhost:8000
 - **Documentação API**: http://localhost:8000/docs
+- **Dashboard API**: http://localhost:8000/api/dashboard/stats
 
 ## 👥 Credenciais de Acesso
 
@@ -243,6 +244,57 @@ docker-compose exec frontend npm test
 # Lint
 docker-compose exec frontend npm run lint
 ```
+
+## 🌳 Desenvolvimento
+
+### Branches Disponíveis
+
+O projeto está organizado em branches específicas para cada módulo:
+
+#### **Frontend - Páginas**
+- `feature/projetos-page` - Gestão de projetos
+- `feature/indicadores-page` - Indicadores trimestrais  
+- `feature/5w2h-page` - Editor de planeamento 5W2H
+- `feature/licenciamentos-page` - Gestão de licenciamentos
+- `feature/users-management` - Gestão de utilizadores
+- `feature/auditoria-page` - Auditoria e logs
+
+#### **Componentes Especiais**
+- `feature/mapa-provincias` - Mapa das 21 províncias
+
+#### **Backend e Segurança**
+- `feature/security-improvements` - Melhorias de segurança
+- `feature/import-export-apis` - APIs de importação/exportação
+
+#### **Qualidade**
+- `feature/testing-suite` - Testes automáticos
+- `feature/ci-cd-pipeline` - CI/CD com GitHub Actions
+
+### Como Contribuir
+
+```bash
+# 1. Escolher uma branch de funcionalidade
+git checkout feature/nome-da-funcionalidade
+
+# 2. Desenvolver a funcionalidade
+# ... fazer alterações ...
+
+# 3. Testar localmente
+docker-compose up -d
+./scripts/seed.sh
+
+# 4. Commit e push
+git add .
+git commit -m "feat: descrição da funcionalidade"
+git push origin feature/nome-da-funcionalidade
+
+# 5. Criar Pull Request no GitHub
+```
+
+### Documentação de Desenvolvimento
+- **Plano Geral**: [PLANO_DESENVOLVIMENTO.md](PLANO_DESENVOLVIMENTO.md)
+- **Estratégia de Branches**: [ESTRATEGIA_DESENVOLVIMENTO.md](ESTRATEGIA_DESENVOLVIMENTO.md)
+- **Auditoria de Código**: [AUDITORIA_CODIGO.md](AUDITORIA_CODIGO.md)
 
 ## 🚀 Deploy
 
