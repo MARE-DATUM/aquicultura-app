@@ -5,6 +5,7 @@ import ProtectedRoute from './components/ProtectedRoute';
 import Layout from './components/Layout';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
+import Indicadores from './pages/Indicadores';
 import { USER_ROLES } from './types/constants';
 import { PageHeader } from './components/ui';
 import './App.css';
@@ -51,18 +52,7 @@ function App() {
             element={
               <ProtectedRoute>
                 <Layout>
-                  <PageHeader
-                    title="Indicadores"
-                    description="Monitorização de indicadores de desempenho dos projetos"
-                    breadcrumbs={[
-                      { label: 'Indicadores', current: true }
-                    ]}
-                  />
-                  <div className="p-6">
-                    <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8 text-center">
-                      <p className="text-gray-600">Módulo em desenvolvimento</p>
-                    </div>
-                  </div>
+                  <Indicadores />
                 </Layout>
               </ProtectedRoute>
             }
