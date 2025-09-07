@@ -37,11 +37,19 @@ class Indicador(IndicadorBase):
         from_attributes = True
 
 
+class ProjetoSimple(BaseModel):
+    id: int
+    nome: str
+    
+    class Config:
+        from_attributes = True
+
+
 class IndicadorResponse(IndicadorBase):
     id: int
     created_at: datetime
     updated_at: Optional[datetime] = None
-    projeto: Optional[dict] = None
+    projeto: Optional[ProjetoSimple] = None
 
     class Config:
         from_attributes = True
