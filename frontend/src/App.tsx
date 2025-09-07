@@ -5,6 +5,7 @@ import ProtectedRoute from './components/ProtectedRoute';
 import Layout from './components/Layout';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
+import Projetos from './pages/Projetos';
 import { USER_ROLES } from './types/constants';
 import { PageHeader } from './components/ui';
 import './App.css';
@@ -30,18 +31,7 @@ function App() {
             element={
               <ProtectedRoute>
                 <Layout>
-                  <PageHeader
-                    title="Projetos"
-                    description="Gestão e monitorização dos projetos de aquicultura"
-                    breadcrumbs={[
-                      { label: 'Projetos', current: true }
-                    ]}
-                  />
-                  <div className="p-6">
-                    <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8 text-center">
-                      <p className="text-gray-600">Módulo em desenvolvimento</p>
-                    </div>
-                  </div>
+                  <Projetos />
                 </Layout>
               </ProtectedRoute>
             }
