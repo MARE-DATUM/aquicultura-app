@@ -128,22 +128,22 @@ const Dashboard: React.FC = () => {
   }
 
   // Dados para gráficos - com verificação defensiva
-  const projetosPorEstado = Object.entries(stats.projetos_por_estado || {}).map(([estado, count]) => ({
+  const projetosPorEstado = Object.entries(stats.projetos.projetos_por_estado || {}).map(([estado, count]) => ({
     estado: estado.replace('_', ' ').toUpperCase(),
     count
   }));
 
-  const projetosPorFonte = Object.entries(stats.projetos_por_fonte || {}).map(([fonte, count]) => ({
+  const projetosPorFonte = Object.entries(stats.projetos.projetos_por_fonte || {}).map(([fonte, count]) => ({
     fonte,
     count
   }));
 
-  const indicadoresPorTrimestre = Object.entries(stats.indicadores_por_trimestre || {}).map(([trimestre, count]) => ({
+  const indicadoresPorTrimestre = Object.entries(stats.indicadores.por_trimestre || {}).map(([trimestre, count]) => ({
     trimestre,
     count
   }));
 
-  const licenciamentosPorStatus = Object.entries(stats.licenciamentos_por_status || {}).map(([status, count]) => ({
+  const licenciamentosPorStatus = Object.entries(stats.licenciamentos.por_status || {}).map(([status, count]) => ({
     status: status.replace('_', ' ').toUpperCase(),
     count
   }));
@@ -233,15 +233,15 @@ const Dashboard: React.FC = () => {
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
         <StatCard
           title="Total de Projetos"
-          value={stats.total_projetos}
+          value={stats.resumo.total_projetos}
           icon={<FolderOpen className="h-6 w-6 text-white" />}
           color="bg-blue-600"
           trend="neutral"
-          trendValue="21 ativos"
+          trendValue={`${stats.resumo.projetos_ativos} ativos`}
         />
         <StatCard
           title="Indicadores Monitorizados"
-          value={stats.total_indicadores}
+          value={stats.resumo.total_indicadores}
           icon={<BarChart3 className="h-6 w-6 text-white" />}
           color="bg-green-600"
           trend="up"
@@ -249,7 +249,7 @@ const Dashboard: React.FC = () => {
         />
         <StatCard
           title="Execução Orçamental"
-          value={`${stats.execucao_media_percentual}%`}
+          value={`${stats.kpis_18_meses.execucao_orcamental_percentual}%`}
           icon={<DollarSign className="h-6 w-6 text-white" />}
           color="bg-yellow-600"
           subtitle="Média nacional"
@@ -258,11 +258,11 @@ const Dashboard: React.FC = () => {
         />
         <StatCard
           title="Licenciamentos"
-          value={stats.total_licenciamentos}
+          value={stats.licenciamentos.total_licenciamentos}
           icon={<FileText className="h-6 w-6 text-white" />}
           color="bg-purple-600"
           trend="neutral"
-          trendValue="Em análise"
+          trendValue={`${stats.licenciamentos.por_status.APROVADO || 0} aprovados`}
         />
       </div>
 

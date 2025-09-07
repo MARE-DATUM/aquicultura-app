@@ -50,7 +50,7 @@ def get_dashboard_stats(
             "auditoria": audit_stats,
             "resumo": {
                 "total_projetos": projetos_stats.get("total_projetos", 0),
-                "projetos_ativos": projetos_stats.get("EM_EXECUCAO", 0),
+                "projetos_ativos": projetos_stats.get("projetos_por_estado", {}).get("EM_EXECUCAO", 0),
                 "total_provincias_cobertas": len([p for p in mapa_data if p.get("total_projetos", 0) > 0]),
                 "total_indicadores": indicadores_stats.get("total_indicadores", 0),
                 "licencas_aprovadas": licenciamentos_stats.get("por_status", {}).get("APROVADO", 0),

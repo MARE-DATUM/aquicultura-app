@@ -43,11 +43,19 @@ class Eixo5W2H(Eixo5W2HBase):
         from_attributes = True
 
 
+class ProjetoSimple(BaseModel):
+    id: int
+    nome: str
+    
+    class Config:
+        from_attributes = True
+
+
 class Eixo5W2HResponse(Eixo5W2HBase):
     id: int
     created_at: datetime
     updated_at: Optional[datetime] = None
-    projeto: Optional[dict] = None
+    projeto: Optional[ProjetoSimple] = None
 
     class Config:
         from_attributes = True

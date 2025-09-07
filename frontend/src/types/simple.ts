@@ -129,14 +129,56 @@ export interface AuthContextType {
 
 // Dashboard interfaces
 export interface DashboardStats {
-  total_projetos: number;
-  total_indicadores: number;
-  total_licenciamentos: number;
-  execucao_media_percentual: number;
-  projetos_por_estado: Record<string, number>;
-  projetos_por_fonte: Record<string, number>;
-  indicadores_por_trimestre: Record<string, number>;
-  licenciamentos_por_status: Record<string, number>;
+  projetos: {
+    total_projetos: number;
+    total_indicadores: number;
+    total_licenciamentos: number;
+    execucao_media_percentual: number;
+    projetos_por_estado: Record<string, number>;
+    projetos_por_fonte: Record<string, number>;
+    indicadores_por_trimestre: Record<string, number>;
+    licenciamentos_por_status: Record<string, number>;
+  };
+  indicadores: {
+    total_indicadores: number;
+    por_trimestre: Record<string, number>;
+    execucao_media_percentual: number;
+    indicadores_por_projeto: number;
+  };
+  licenciamentos: {
+    total_licenciamentos: number;
+    por_status: Record<string, number>;
+    por_entidade: Record<string, number>;
+    tempo_medio_processamento_dias: number;
+    taxa_aprovacao: number;
+  };
+  mapa: MapaProvincia[];
+  auditoria?: any;
+  resumo: {
+    total_projetos: number;
+    projetos_ativos: number;
+    total_provincias_cobertas: number;
+    total_indicadores: number;
+    licencas_aprovadas: number;
+    licencas_pendentes: number;
+  };
+  kpis_18_meses: {
+    producao_total_toneladas: number;
+    familias_beneficiadas: number;
+    empregos_criados: number;
+    execucao_orcamental_percentual: number;
+    licencas_fast_track: number;
+  };
+  distribuicao_fontes: Record<string, number>;
+  distribuicao_tipos: Record<string, number>;
+  distribuicao_estados: Record<string, number>;
+  evolucao_trimestral: Record<string, number>;
+  meta_data: {
+    ultima_atualizacao: string;
+    periodo_referencia: string;
+    total_provincias: number;
+    user_role: string;
+  };
 }
 
 export interface MapaProvincia {

@@ -22,8 +22,17 @@ class AuditLog(AuditLogBase):
         from_attributes = True
 
 
+class UserSimple(BaseModel):
+    id: int
+    email: str
+    full_name: str
+    
+    class Config:
+        from_attributes = True
+
+
 class AuditLogResponse(AuditLog):
-    user: Optional[Any] = None
+    user: Optional[UserSimple] = None
 
     class Config:
         from_attributes = True
