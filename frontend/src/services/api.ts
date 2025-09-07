@@ -145,7 +145,17 @@ class ApiService {
   }
 
   async getDashboardStats(): Promise<DashboardStats> {
-    const response: AxiosResponse<DashboardStats> = await this.api.get('/projetos/dashboard/stats');
+    const response: AxiosResponse<DashboardStats> = await this.api.get('/dashboard/stats');
+    return response.data;
+  }
+
+  async getDashboardKPIs(): Promise<any> {
+    const response: AxiosResponse<any> = await this.api.get('/dashboard/kpis');
+    return response.data;
+  }
+
+  async getDashboardCharts(): Promise<any> {
+    const response: AxiosResponse<any> = await this.api.get('/dashboard/charts');
     return response.data;
   }
 

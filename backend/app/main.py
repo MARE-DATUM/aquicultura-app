@@ -7,7 +7,7 @@ from slowapi.errors import RateLimitExceeded
 from app.core.config import settings, get_cors_origins
 from app.db.database import engine
 from app.db.database import Base
-from app.api import auth, users, projetos, indicadores, licenciamentos, eixos_5w2h, auditoria, provincias
+from app.api import auth, users, projetos, indicadores, licenciamentos, eixos_5w2h, auditoria, provincias, dashboard
 
 # Cria tabelas no banco de dados
 Base.metadata.create_all(bind=engine)
@@ -50,6 +50,7 @@ app.include_router(licenciamentos.router, prefix="/api/licenciamentos", tags=["l
 app.include_router(eixos_5w2h.router, prefix="/api/eixos-5w2h", tags=["eixos-5w2h"])
 app.include_router(auditoria.router, prefix="/api/auditoria", tags=["auditoria"])
 app.include_router(provincias.router, prefix="/api/provincias", tags=["provincias"])
+app.include_router(dashboard.router, prefix="/api/dashboard", tags=["dashboard"])
 
 
 @app.get("/")
@@ -64,11 +65,18 @@ async def root():
 
 @app.get("/health")
 async def health_check():
-    """Health check endpoint"""
+    """Health check geral da aplicação"""
+    from datetime import datetime
     return {
         "status": "healthy",
+        "timestamp": datetime.utcnow().isoformat() + "Z",
         "version": settings.app_version,
-        "environment": settings.env
+        "environment": settings.env,
+        "services": {
+            "api": "healthy",
+            "database": "healthy",  # TODO: Implementar verificação real
+            "redis": "healthy"      # TODO: Implementar verificação real
+        }
     }
 
 
