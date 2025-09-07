@@ -1,0 +1,148 @@
+# Arquivos de ambiente
+.env
+.env.local
+.env.production
+.env.development
+config/production.env
+config/staging.env
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Dependências
+node_modules/
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Docker
+.dockerignore
+
+# Backups
+backups/
+*.sql
+*.dump
+*.backup
+
+# Uploads
+uploads/
+temp/
+tmp/
+
+# Certificados e chaves
+*.pem
+*.key
+*.crt
+*.p12
+*.pfx
+
+# Cache
+.cache/
+.parcel-cache/
+.next/
+.nuxt/
+.vuepress/dist/
+.serverless/
+.fusebox/
+.dynamodb/
+
+# Coverage
+coverage/
+*.lcov
+.nyc_output
+
+# Pytest
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# pyenv
+.python-version
+
+# Celery
+celerybeat-schedule
+celerybeat.pid
+
+# SageMath
+*.sage.py
+
+# Environments
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Pyre
+.pyre/
+
+# pytype
+.pytype/
+
+# Cython
+cython_debug/
+
+# Alembic
+alembic/versions/*.py
+!alembic/versions/__init__.py
+
+# Frontend build
+frontend/dist/
+frontend/build/
+
+# Dados sensíveis
+*.csv
+*.xlsx
+*.pdf
+!templates/*.csv
+!examples/*.csv
