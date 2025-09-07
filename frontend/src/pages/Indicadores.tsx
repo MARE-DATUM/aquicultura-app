@@ -119,9 +119,11 @@ const Indicadores: React.FC = () => {
     }
   };
 
-  const calculateProgress = (atual: number, meta: number) => {
-    if (meta === 0) return 0;
-    return Math.min((atual / meta) * 100, 100);
+  const calculateProgress = (atual: number | string, meta: number | string) => {
+    const metaNum = Number(meta);
+    const atualNum = Number(atual);
+    if (metaNum === 0) return 0;
+    return Math.min((atualNum / metaNum) * 100, 100);
   };
 
   const getProgressColor = (progress: number) => {
@@ -142,8 +144,8 @@ const Indicadores: React.FC = () => {
   const chartData = {
     byTrimestre: trimestres.map(trimestre => {
       const indicadoresTrimestre = indicadores.filter(i => i.periodo_referencia === trimestre);
-      const totalMeta = indicadoresTrimestre.reduce((sum, i) => sum + i.meta, 0);
-      const totalAtual = indicadoresTrimestre.reduce((sum, i) => sum + i.valor_actual, 0);
+      const totalMeta = indicadoresTrimestre.reduce((sum, i) => sum + Number(i.meta), 0);
+      const totalAtual = indicadoresTrimestre.reduce((sum, i) => sum + Number(i.valor_actual), 0);
       return {
         trimestre,
         meta: totalMeta,
@@ -153,8 +155,8 @@ const Indicadores: React.FC = () => {
     }),
     byProjeto: projetos.slice(0, 10).map(projeto => {
       const indicadoresProjeto = indicadores.filter(i => i.projeto_id === projeto.id);
-      const totalMeta = indicadoresProjeto.reduce((sum, i) => sum + i.meta, 0);
-      const totalAtual = indicadoresProjeto.reduce((sum, i) => sum + i.valor_actual, 0);
+      const totalMeta = indicadoresProjeto.reduce((sum, i) => sum + Number(i.meta), 0);
+      const totalAtual = indicadoresProjeto.reduce((sum, i) => sum + Number(i.valor_actual), 0);
       return {
         nome: projeto.nome.length > 20 ? projeto.nome.substring(0, 20) + '...' : projeto.nome,
         meta: totalMeta,
@@ -163,10 +165,10 @@ const Indicadores: React.FC = () => {
       };
     }),
     statusDistribution: [
-      { name: 'Acima da Meta', value: indicadores.filter(i => i.valor_actual > i.meta).length, color: '#10B981' },
-      { name: 'Dentro da Meta', value: indicadores.filter(i => i.valor_actual >= i.meta * 0.8 && i.valor_actual <= i.meta).length, color: '#3B82F6' },
-      { name: 'Abaixo da Meta', value: indicadores.filter(i => i.valor_actual < i.meta * 0.8).length, color: '#F59E0B' },
-      { name: 'Crítico', value: indicadores.filter(i => i.valor_actual < i.meta * 0.5).length, color: '#EF4444' }
+      { name: 'Acima da Meta', value: indicadores.filter(i => Number(i.valor_actual) > Number(i.meta)).length, color: '#10B981' },
+      { name: 'Dentro da Meta', value: indicadores.filter(i => Number(i.valor_actual) >= Number(i.meta) * 0.8 && Number(i.valor_actual) <= Number(i.meta)).length, color: '#3B82F6' },
+      { name: 'Abaixo da Meta', value: indicadores.filter(i => Number(i.valor_actual) < Number(i.meta) * 0.8).length, color: '#F59E0B' },
+      { name: 'Crítico', value: indicadores.filter(i => Number(i.valor_actual) < Number(i.meta) * 0.5).length, color: '#EF4444' }
     ]
   };
 
@@ -321,7 +323,7 @@ const Indicadores: React.FC = () => {
               <div className="ml-4">
                 <p className="text-sm font-medium text-gray-600">Meta Total</p>
                 <p className="text-2xl font-bold text-gray-900">
-                  {indicadores.reduce((sum, i) => sum + i.meta, 0).toLocaleString()}
+                  {indicadores.reduce((sum, i) => sum + Number(i.meta), 0).toLocaleString()}
                 </p>
               </div>
             </div>
@@ -335,7 +337,7 @@ const Indicadores: React.FC = () => {
               <div className="ml-4">
                 <p className="text-sm font-medium text-gray-600">Realizado</p>
                 <p className="text-2xl font-bold text-gray-900">
-                  {indicadores.reduce((sum, i) => sum + i.valor_actual, 0).toLocaleString()}
+                  {indicadores.reduce((sum, i) => sum + Number(i.valor_actual), 0).toLocaleString()}
                 </p>
               </div>
             </div>
@@ -350,7 +352,7 @@ const Indicadores: React.FC = () => {
                 <p className="text-sm font-medium text-gray-600">Execução Média</p>
                 <p className="text-2xl font-bold text-gray-900">
                   {indicadores.length > 0 
-                    ? ((indicadores.reduce((sum, i) => sum + i.valor_actual, 0) / indicadores.reduce((sum, i) => sum + i.meta, 0)) * 100).toFixed(1)
+                    ? ((indicadores.reduce((sum, i) => sum + Number(i.valor_actual), 0) / indicadores.reduce((sum, i) => sum + Number(i.meta), 0)) * 100).toFixed(1)
                     : 0}%
                 </p>
               </div>

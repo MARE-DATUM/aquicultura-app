@@ -145,9 +145,11 @@ const Projetos: React.FC = () => {
     }).format(value);
   };
 
-  const calculateProgress = (executado: number, previsto: number) => {
-    if (previsto === 0) return 0;
-    return Math.min((executado / previsto) * 100, 100);
+  const calculateProgress = (executado: number | string, previsto: number | string) => {
+    const previstoNum = Number(previsto);
+    const executadoNum = Number(executado);
+    if (previstoNum === 0) return 0;
+    return Math.min((executadoNum / previstoNum) * 100, 100);
   };
 
   if (loading) {
@@ -377,8 +379,8 @@ const Projetos: React.FC = () => {
                       ></div>
                     </div>
                     <div className="flex justify-between text-xs text-gray-500 mt-1">
-                      <span>{formatCurrency(projeto.orcamento_executado_kz)}</span>
-                      <span>{formatCurrency(projeto.orcamento_previsto_kz)}</span>
+                      <span>{formatCurrency(Number(projeto.orcamento_executado_kz))}</span>
+                      <span>{formatCurrency(Number(projeto.orcamento_previsto_kz))}</span>
                     </div>
                   </div>
 
@@ -484,7 +486,7 @@ const Projetos: React.FC = () => {
               <div className="ml-4">
                 <p className="text-sm font-medium text-gray-600">Orçamento Total</p>
                 <p className="text-2xl font-bold text-gray-900">
-                  {formatCurrency(projetos.reduce((sum, p) => sum + p.orcamento_previsto_kz, 0))}
+                  {formatCurrency(projetos.reduce((sum, p) => sum + Number(p.orcamento_previsto_kz), 0))}
                 </p>
               </div>
             </div>

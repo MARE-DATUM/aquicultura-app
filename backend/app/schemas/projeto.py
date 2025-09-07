@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, field_serializer
 from typing import Optional, List, Any
 from datetime import datetime
 from decimal import Decimal
@@ -70,6 +70,11 @@ class ProjetoResponse(BaseModel):
     created_at: datetime
     updated_at: Optional[datetime] = None
     provincia: Optional[ProvinciaSimple] = None
+
+    @field_serializer('orcamento_previsto_kz', 'orcamento_executado_kz')
+    def serialize_decimal_to_float(self, value: Decimal) -> float:
+        """Converte Decimal para float para o frontend"""
+        return float(value) if value is not None else 0.0
 
     class Config:
         from_attributes = True
