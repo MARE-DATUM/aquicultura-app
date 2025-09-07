@@ -225,7 +225,7 @@ const Indicadores: React.FC = () => {
               <Filter className="h-4 w-4" />
               Filtros
               {Object.values(filters).some(v => v !== undefined && v !== '') && (
-                <Badge variant="secondary" className="ml-2">
+                <Badge variant="default" className="ml-2">
                   {Object.values(filters).filter(v => v !== undefined && v !== '').length}
                 </Badge>
               )}
@@ -429,12 +429,10 @@ const Indicadores: React.FC = () => {
             title="Nenhum indicador encontrado"
             description="Não existem indicadores que correspondam aos critérios de pesquisa."
             action={
-              canCreate() ? (
-                <Button onClick={() => openModal('create')}>
-                  <Plus className="h-4 w-4 mr-2" />
-                  Criar Primeiro Indicador
-                </Button>
-              ) : undefined
+              canCreate() ? {
+                label: "Criar Primeiro Indicador",
+                onClick: () => openModal('create')
+              } : undefined
             }
           />
         ) : (
@@ -497,7 +495,7 @@ const Indicadores: React.FC = () => {
                           </div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
-                          <Badge variant="outline">
+                          <Badge variant="info">
                             {indicador.periodo_referencia}
                           </Badge>
                         </td>

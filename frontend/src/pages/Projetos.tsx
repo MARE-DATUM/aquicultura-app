@@ -206,7 +206,7 @@ const Projetos: React.FC = () => {
               <Filter className="h-4 w-4" />
               Filtros
               {Object.values(filters).some(v => v !== undefined && v !== '') && (
-                <Badge variant="secondary" className="ml-2">
+                <Badge variant="default" className="ml-2">
                   {Object.values(filters).filter(v => v !== undefined && v !== '').length}
                 </Badge>
               )}
@@ -317,12 +317,10 @@ const Projetos: React.FC = () => {
             title="Nenhum projeto encontrado"
             description="Não existem projetos que correspondam aos critérios de pesquisa."
             action={
-              canCreate() ? (
-                <Button onClick={() => openModal('create')}>
-                  <Plus className="h-4 w-4 mr-2" />
-                  Criar Primeiro Projeto
-                </Button>
-              ) : undefined
+              canCreate() ? {
+                label: "Criar Primeiro Projeto",
+                onClick: () => openModal('create')
+              } : undefined
             }
           />
         ) : (
@@ -440,9 +438,9 @@ const Projetos: React.FC = () => {
         <div className="mt-8 grid grid-cols-1 md:grid-cols-4 gap-4">
           <Card className="p-4">
             <div className="flex items-center">
-              <div className="p-2 bg-blue-100 rounded-lg">
-                <FolderOpen className="h-6 w-6 text-blue-600" />
-              </div>
+                  <div className="p-2 bg-blue-100 rounded-lg">
+                    <Plus className="h-6 w-6 text-blue-600" />
+                  </div>
               <div className="ml-4">
                 <p className="text-sm font-medium text-gray-600">Total de Projetos</p>
                 <p className="text-2xl font-bold text-gray-900">{projetos.length}</p>
