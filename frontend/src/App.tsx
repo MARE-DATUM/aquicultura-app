@@ -9,6 +9,7 @@ import Projetos from './pages/Projetos';
 import Indicadores from './pages/Indicadores';
 import Eixos5W2H from './pages/Eixos5W2H';
 import Licenciamentos from './pages/Licenciamentos';
+import Utilizadores from './pages/Utilizadores';
 import { USER_ROLES } from './types/constants';
 import { PageHeader } from './components/ui';
 import './App.css';
@@ -95,18 +96,7 @@ function App() {
             element={
               <ProtectedRoute requiredRole={USER_ROLES.ROOT}>
                 <Layout>
-                  <PageHeader
-                    title="Utilizadores"
-                    description="Gestão de utilizadores e permissões do sistema"
-                    breadcrumbs={[
-                      { label: 'Utilizadores', current: true }
-                    ]}
-                  />
-                  <div className="p-6">
-                    <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8 text-center">
-                      <p className="text-gray-600">Módulo em desenvolvimento</p>
-                    </div>
-                  </div>
+                  <Utilizadores />
                 </Layout>
               </ProtectedRoute>
             }
