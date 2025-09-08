@@ -206,6 +206,20 @@ const Indicadores: React.FC = () => {
     })()
   };
 
+  // Debug dos dados dos gráficos
+  console.log('Debug - chartData.byTrimestre:', chartData.byTrimestre);
+  console.log('Debug - chartData.statusDistribution:', chartData.statusDistribution);
+  console.log('Debug - chartData.byProjeto:', chartData.byProjeto);
+  
+  // Verificar se há dados válidos
+  const hasValidTrimestre = chartData.byTrimestre.some(item => item.meta > 0 || item.atual > 0);
+  const hasValidStatus = chartData.statusDistribution.some(item => item.value > 0);
+  const hasValidProjetos = chartData.byProjeto.length > 0;
+  
+  console.log('Debug - hasValidTrimestre:', hasValidTrimestre);
+  console.log('Debug - hasValidStatus:', hasValidStatus);
+  console.log('Debug - hasValidProjetos:', hasValidProjetos);
+
   if (loading) {
     return (
       <>
@@ -399,21 +413,30 @@ const Indicadores: React.FC = () => {
           {/* Evolução por Trimestre */}
           <Card className="p-6">
             <h3 className="text-lg font-semibold text-gray-900 mb-4">Evolução por Trimestre</h3>
-            <ResponsiveContainer width="100%" height={300}>
-              <BarChart data={chartData.byTrimestre}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="trimestre" />
-                <YAxis />
-                <Tooltip 
-                  formatter={(value, name) => [
-                    typeof value === 'number' ? value.toLocaleString() : value,
-                    name === 'meta' ? 'Meta' : name === 'atual' ? 'Realizado' : 'Execução (%)'
-                  ]}
-                />
-                <Bar dataKey="meta" fill="#94A3B8" name="Meta" />
-                <Bar dataKey="atual" fill="#3B82F6" name="Realizado" />
-              </BarChart>
-            </ResponsiveContainer>
+            {hasValidTrimestre ? (
+              <ResponsiveContainer width="100%" height={300}>
+                <BarChart data={chartData.byTrimestre} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="trimestre" />
+                  <YAxis />
+                  <Tooltip 
+                    formatter={(value, name) => [
+                      typeof value === 'number' ? value.toLocaleString('pt-AO') : value,
+                      name === 'meta' ? 'Meta' : name === 'atual' ? 'Realizado' : 'Execução (%)'
+                    ]}
+                  />
+                  <Bar dataKey="meta" fill="#E5E7EB" name="Meta" />
+                  <Bar dataKey="atual" fill="#3B82F6" name="Realizado" />
+                </BarChart>
+              </ResponsiveContainer>
+            ) : (
+              <div className="h-[300px] flex items-center justify-center text-gray-500">
+                <div className="text-center">
+                  <BarChart3 className="h-12 w-12 mx-auto mb-4 text-gray-300" />
+                  <p>Sem dados para exibir</p>
+                </div>
+              </div>
+            )}
           </Card>
 
           {/* Status dos Indicadores */}
@@ -428,34 +451,45 @@ const Indicadores: React.FC = () => {
                   outerRadius={100}
                   fill="#8884d8"
                   dataKey="value"
-                  label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                  label={({ name, value, percent }) => value > 0 ? `${name} ${value}` : null}
                 >
                   {chartData.statusDistribution.map((entry, index) => (
                     <Cell key={`cell-${index}`} fill={entry.color} />
                   ))}
                 </Pie>
-                <Tooltip />
+                <Tooltip formatter={(value, name) => [value, name]} />
               </PieChart>
             </ResponsiveContainer>
           </Card>
 
           {/* Top 10 Projetos por Execução */}
           <Card className="p-6 lg:col-span-2">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Top 10 Projetos por Execução</h3>
-            <ResponsiveContainer width="100%" height={300}>
-              <BarChart data={chartData.byProjeto} layout="horizontal">
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis type="number" />
-                <YAxis dataKey="nome" type="category" width={150} />
-                <Tooltip 
-                  formatter={(value, name) => [
-                    typeof value === 'number' ? value.toLocaleString() : value,
-                    name === 'execucao' ? 'Execução (%)' : name === 'meta' ? 'Meta' : 'Realizado'
-                  ]}
-                />
-                <Bar dataKey="execucao" fill="#10B981" name="Execução (%)" />
-              </BarChart>
-            </ResponsiveContainer>
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">
+              Top Projetos por Execução ({chartData.byProjeto.length} projetos)
+            </h3>
+            {hasValidProjetos ? (
+              <ResponsiveContainer width="100%" height={300}>
+                <BarChart data={chartData.byProjeto} layout="horizontal" margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis type="number" domain={[0, 100]} />
+                  <YAxis dataKey="nome" type="category" width={180} />
+                  <Tooltip 
+                    formatter={(value, name) => [
+                      typeof value === 'number' ? `${value.toFixed(1)}%` : value,
+                      'Execução'
+                    ]}
+                  />
+                  <Bar dataKey="execucao" fill="#10B981" name="Execução (%)" />
+                </BarChart>
+              </ResponsiveContainer>
+            ) : (
+              <div className="h-[300px] flex items-center justify-center text-gray-500">
+                <div className="text-center">
+                  <TrendingUp className="h-12 w-12 mx-auto mb-4 text-gray-300" />
+                  <p>Nenhum projeto com indicadores</p>
+                </div>
+              </div>
+            )}
           </Card>
         </div>
 
