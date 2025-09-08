@@ -141,6 +141,9 @@ const Indicadores: React.FC = () => {
   };
 
   // Dados para gráficos
+  console.log('Debug - Indicadores carregados:', indicadores.length);
+  console.log('Debug - Projetos carregados:', projetos.length);
+  
   const chartData = {
     byTrimestre: trimestres.map(trimestre => {
       const indicadoresTrimestre = indicadores.filter(i => i.periodo_referencia === trimestre);
@@ -153,23 +156,54 @@ const Indicadores: React.FC = () => {
         execucao: totalMeta > 0 ? (totalAtual / totalMeta) * 100 : 0
       };
     }),
-    byProjeto: projetos.slice(0, 10).map(projeto => {
-      const indicadoresProjeto = indicadores.filter(i => i.projeto_id === projeto.id);
-      const totalMeta = indicadoresProjeto.reduce((sum, i) => sum + Number(i.meta), 0);
-      const totalAtual = indicadoresProjeto.reduce((sum, i) => sum + Number(i.valor_actual), 0);
-      return {
-        nome: projeto.nome.length > 20 ? projeto.nome.substring(0, 20) + '...' : projeto.nome,
-        meta: totalMeta,
-        atual: totalAtual,
-        execucao: totalMeta > 0 ? (totalAtual / totalMeta) * 100 : 0
-      };
-    }),
-    statusDistribution: [
-      { name: 'Acima da Meta', value: indicadores.filter(i => Number(i.valor_actual) > Number(i.meta)).length, color: '#10B981' },
-      { name: 'Dentro da Meta', value: indicadores.filter(i => Number(i.valor_actual) >= Number(i.meta) * 0.8 && Number(i.valor_actual) <= Number(i.meta)).length, color: '#3B82F6' },
-      { name: 'Abaixo da Meta', value: indicadores.filter(i => Number(i.valor_actual) < Number(i.meta) * 0.8).length, color: '#F59E0B' },
-      { name: 'Crítico', value: indicadores.filter(i => Number(i.valor_actual) < Number(i.meta) * 0.5).length, color: '#EF4444' }
-    ]
+    byProjeto: projetos
+      .map(projeto => {
+        const indicadoresProjeto = indicadores.filter(i => i.projeto_id === projeto.id);
+        const totalMeta = indicadoresProjeto.reduce((sum, i) => sum + Number(i.meta), 0);
+        const totalAtual = indicadoresProjeto.reduce((sum, i) => sum + Number(i.valor_actual), 0);
+        return {
+          nome: projeto.nome.length > 25 ? projeto.nome.substring(0, 25) + '...' : projeto.nome,
+          meta: totalMeta,
+          atual: totalAtual,
+          execucao: totalMeta > 0 ? (totalAtual / totalMeta) * 100 : 0,
+          temIndicadores: indicadoresProjeto.length > 0
+        };
+      })
+      .filter(projeto => projeto.temIndicadores) // Apenas projetos com indicadores
+      .sort((a, b) => b.execucao - a.execucao)   // Ordenar por execução desc
+      .slice(0, 10),                             // Top 10
+    statusDistribution: (() => {
+      let acimaMeta = 0, dentroMeta = 0, abaixoMeta = 0, critico = 0;
+      
+      indicadores.forEach(i => {
+        const meta = Number(i.meta);
+        const atual = Number(i.valor_actual);
+        
+        if (meta === 0) {
+          critico++; // Meta zero é considerado crítico
+          return;
+        }
+        
+        const pct = atual / meta;
+        
+        if (pct > 1.0) {
+          acimaMeta++;
+        } else if (pct >= 0.8) {
+          dentroMeta++;
+        } else if (pct >= 0.5) {
+          abaixoMeta++;
+        } else {
+          critico++;
+        }
+      });
+      
+      return [
+        { name: 'Acima da Meta', value: acimaMeta, color: '#10B981' },
+        { name: 'Dentro da Meta', value: dentroMeta, color: '#3B82F6' },
+        { name: 'Abaixo da Meta', value: abaixoMeta, color: '#F59E0B' },
+        { name: 'Crítico', value: critico, color: '#EF4444' }
+      ];
+    })()
   };
 
   if (loading) {
