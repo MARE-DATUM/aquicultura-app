@@ -52,7 +52,28 @@
 - ✅ **Controlo de Permissões**: Completo por papel
 - ✅ **Interface Responsiva**: Acessível e moderna
 
-#### **5. Configuração e Segurança (80%)**
+#### **5. Página de Planeamento 5W2H (100%)**
+**Branch**: `feature/5w2h-page` ✅ **PRONTA PARA MERGE**
+
+- ✅ **Dashboard Estatísticas**: Total eixos, projetos com eixos, orçamento total
+- ✅ **Análise 5W2H Completa**:
+  - What (O que) - Objetivo do projeto
+  - Why (Porquê) - Justificativa e motivação
+  - Where (Onde) - Localização geográfica
+  - When (Quando) - Cronograma e prazos
+  - Who (Quem) - Responsáveis e stakeholders
+  - How (Como) - Metodologia e abordagem
+  - How Much (Quanto) - Orçamento em Kwanza
+- ✅ **Períodos por Fases**: 0-6 meses (azul), 7-12 meses (verde), 13-18 meses (roxo)
+- ✅ **Filtros Avançados**: Por projeto, período e pesquisa textual
+- ✅ **Lista em Cards**: Design responsivo com informações detalhadas
+- ✅ **Modal de Visualização**: Detalhes completos com marcos do projeto
+- ✅ **Sistema de Marcos**: JSON com nome, data e status
+- ✅ **Controlo de Permissões**: CRUD baseado no papel do utilizador
+- ✅ **Formatação Localizada**: Moeda AOA, datas pt-AO
+- ✅ **Estados de UI**: Loading, empty state, error handling
+
+#### **6. Configuração e Segurança (80%)**
 - ✅ **CORS Dinâmico**: Configuração via variáveis de ambiente
 - ✅ **Rate Limiting**: Proteção contra ataques de força bruta
 - ✅ **Health Checks**: Monitorização de serviços
@@ -61,7 +82,7 @@
 - ⚠️ **Headers de Segurança**: Pendente (CSP, HSTS)
 - ⚠️ **Sanitização**: Inputs não sanitizados
 
-#### **6. Documentação (90%)**
+#### **7. Documentação (90%)**
 - ✅ **README Completo**: Instruções de instalação e uso
 - ✅ **Plano de Desenvolvimento**: Cronograma de 5 sprints
 - ✅ **Estratégia de Branches**: 12 branches organizadas
@@ -73,7 +94,7 @@
 ### **Sprint 1 - Frontend Core**
 - ✅ **Projetos**: Concluído (feature/projetos-page)
 - ✅ **Indicadores**: Concluído (feature/indicadores-page)  
-- 🔄 **5W2H**: Em desenvolvimento (feature/5w2h-page)
+- ✅ **5W2H**: Concluído (feature/5w2h-page)
 
 ### **Próximas Páginas (Sprint 2)**
 - ⏳ **Licenciamentos**: Gestão fast-track (feature/licenciamentos-page)
@@ -95,8 +116,8 @@
 
 ### **Código Implementado**
 - **Backend**: ~5.000 linhas (FastAPI, SQLAlchemy, Pydantic)
-- **Frontend**: ~2.000 linhas (React, TypeScript, Tailwind)
-- **Páginas Completas**: 3 (Dashboard, Projetos, Indicadores)
+- **Frontend**: ~2.700 linhas (React, TypeScript, Tailwind)
+- **Páginas Completas**: 4 (Dashboard, Projetos, Indicadores, 5W2H)
 - **APIs Funcionais**: 8 módulos (auth, users, projetos, indicadores, etc.)
 
 ### **Funcionalidades**
@@ -105,7 +126,7 @@
 - **Dashboard**: 100% ✅
 - **Projetos**: 100% ✅
 - **Indicadores**: 100% ✅
-- **5W2H**: 20% 🔄
+- **5W2H**: 100% ✅
 - **Licenciamentos**: 0% ⏳
 - **Mapa**: 0% ⏳
 - **Testes**: 0% ⏳
@@ -116,7 +137,7 @@
 | Dashboard | ✅ 100% | ✅ 100% | ❌ 0% | ✅ Completo |
 | Projetos | ✅ 100% | ✅ 100% | ❌ 0% | ✅ Completo |
 | Indicadores | ✅ 100% | ✅ 100% | ❌ 0% | ✅ Completo |
-| 5W2H | ✅ 80% | 🔄 20% | ❌ 0% | 🔄 Em desenvolvimento |
+| 5W2H | ✅ 100% | ✅ 100% | ❌ 0% | ✅ Completo |
 | Licenciamentos | ✅ 80% | ❌ 0% | ❌ 0% | ⏳ Pendente |
 | Utilizadores | ✅ 100% | ❌ 0% | ❌ 0% | ⏳ Pendente |
 | Auditoria | ✅ 100% | ❌ 0% | ❌ 0% | ⏳ Pendente |
@@ -130,13 +151,14 @@
 git checkout main
 git merge feature/projetos-page
 git merge feature/indicadores-page
+git merge feature/5w2h-page
 git push origin main
 ```
 
-### **2. Continuar 5W2H (Esta semana)**
-- Completar página de planeamento 5W2H
-- Editor por projeto e fase (0-6, 7-12, 13-18 meses)
-- Tabelas para What, Why, Where, When, Who, How, How Much
+### **2. Sprint 1 Concluído ✅**
+- ✅ Página de gestão de projetos
+- ✅ Página de indicadores trimestrais
+- ✅ Página de planeamento 5W2H
 
 ### **3. Sprint 2 - Gestão (Próxima semana)**
 - Página de licenciamentos fast-track
@@ -155,17 +177,17 @@ git push origin main
 
 ## 🎯 **PRÓXIMOS PASSOS IMEDIATOS**
 
-1. **Fazer merge** das branches prontas (projetos + indicadores)
-2. **Completar página 5W2H** (2-3 dias)
-3. **Implementar licenciamentos** (2-3 dias)  
-4. **Adicionar gestão de utilizadores** (2-3 dias)
+1. **Fazer merge** das branches prontas (projetos + indicadores + 5W2H) ✅
+2. **Implementar licenciamentos** (2-3 dias)  
+3. **Adicionar gestão de utilizadores** (2-3 dias)
+4. **Implementar auditoria e logs** (2-3 dias)
 5. **Implementar mapa das províncias** (3-4 dias)
 
 ## 🚀 **STATUS GERAL**
 
 ### **✅ Sucessos Alcançados**
 - Base sólida e funcionando 100%
-- 2 páginas completas e profissionais
+- 4 páginas completas e profissionais
 - Dashboard com dados reais
 - Arquitetura escalável e bem organizada
 - Documentação completa
@@ -183,4 +205,4 @@ git push origin main
 
 ---
 
-**Conclusão**: O projeto está com **excelente progresso** (≈60% concluído). A base está sólida e as próximas funcionalidades podem ser desenvolvidas rapidamente seguindo o padrão estabelecido.
+**Conclusão**: O projeto está com **excelente progresso** (≈70% concluído). Sprint 1 totalmente concluído com 4 páginas funcionais. A base está sólida e as próximas funcionalidades podem ser desenvolvidas rapidamente seguindo o padrão estabelecido.
