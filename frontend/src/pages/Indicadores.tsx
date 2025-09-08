@@ -219,6 +219,12 @@ const Indicadores: React.FC = () => {
   console.log('Debug - hasValidTrimestre:', hasValidTrimestre);
   console.log('Debug - hasValidStatus:', hasValidStatus);
   console.log('Debug - hasValidProjetos:', hasValidProjetos);
+  
+  // Debug específico para byProjeto
+  if (chartData.byProjeto.length > 0) {
+    console.log('Debug - Primeiro projeto do gráfico:', chartData.byProjeto[0]);
+    console.log('Debug - Valores de execução:', chartData.byProjeto.map(p => p.execucao));
+  }
 
   if (loading) {
     return (
@@ -469,10 +475,16 @@ const Indicadores: React.FC = () => {
             </h3>
             {hasValidProjetos ? (
               <ResponsiveContainer width="100%" height={300}>
-                <BarChart data={chartData.byProjeto} layout="horizontal" margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+                <BarChart data={chartData.byProjeto} margin={{ top: 20, right: 30, left: 20, bottom: 80 }}>
                   <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis type="number" domain={[0, 100]} />
-                  <YAxis dataKey="nome" type="category" width={180} />
+                  <XAxis 
+                    dataKey="nome" 
+                    angle={-45}
+                    textAnchor="end"
+                    height={80}
+                    interval={0}
+                  />
+                  <YAxis label={{ value: 'Execução (%)', angle: -90, position: 'insideLeft' }} />
                   <Tooltip 
                     formatter={(value, name) => [
                       typeof value === 'number' ? `${value.toFixed(1)}%` : value,
