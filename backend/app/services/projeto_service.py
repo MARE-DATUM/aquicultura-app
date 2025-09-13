@@ -71,21 +71,53 @@ class ProjetoService:
         if not db_projeto:
             return None
         
+        # Capturar valores antigos para auditoria
+        old_values = {
+            'nome': db_projeto.nome,
+            'estado': db_projeto.estado.value if db_projeto.estado else None,
+            'orcamento_previsto_kz': float(db_projeto.orcamento_previsto_kz) if db_projeto.orcamento_previsto_kz else 0,
+            'orcamento_executado_kz': float(db_projeto.orcamento_executado_kz) if db_projeto.orcamento_executado_kz else 0,
+            'responsavel': db_projeto.responsavel,
+            'data_inicio_prevista': db_projeto.data_inicio_prevista.isoformat() if db_projeto.data_inicio_prevista else None,
+            'data_fim_prevista': db_projeto.data_fim_prevista.isoformat() if db_projeto.data_fim_prevista else None
+        }
+        
         # Atualiza campos fornecidos
         update_data = projeto_data.dict(exclude_unset=True)
+        changes = []
+        
         for field, value in update_data.items():
+            old_value = getattr(db_projeto, field)
             setattr(db_projeto, field, value)
+            
+            # Detectar mudanças específicas
+            if field == 'estado' and old_value != value:
+                changes.append(f"Status changed from {old_value.value if old_value else 'None'} to {value.value if value else 'None'}")
+            elif field == 'orcamento_previsto_kz' and old_value != value:
+                changes.append(f"Budget changed from {float(old_value) if old_value else 0} to {float(value) if value else 0}")
+            elif field == 'orcamento_executado_kz' and old_value != value:
+                changes.append(f"Executed budget changed from {float(old_value) if old_value else 0} to {float(value) if value else 0}")
+            elif field == 'responsavel' and old_value != value:
+                changes.append(f"Responsible person changed from '{old_value}' to '{value}'")
+            elif field in ['data_inicio_prevista', 'data_fim_prevista'] and old_value != value:
+                old_date = old_value.isoformat() if old_value else 'None'
+                new_date = value.isoformat() if value else 'None'
+                changes.append(f"{field.replace('_', ' ').title()} changed from {old_date} to {new_date}")
         
         self.db.commit()
         self.db.refresh(db_projeto)
         
-        # Regista auditoria
+        # Regista auditoria com detalhes das mudanças
+        details = f"Updated project {db_projeto.nome}"
+        if changes:
+            details += f" - Changes: {'; '.join(changes)}"
+        
         self.audit_service.log_action(
             user_id=updated_by_user_id,
             action="UPDATE",
             entity="Projeto",
             entity_id=projeto_id,
-            details=f"Updated project {db_projeto.nome}"
+            details=details
         )
         
         return db_projeto
@@ -109,6 +141,125 @@ class ProjetoService:
         )
         
         return True
+    
+    def update_projeto_status(self, projeto_id: int, novo_estado: EstadoProjeto, updated_by_user_id: Optional[int] = None, observacoes: Optional[str] = None) -> Optional[Projeto]:
+        """Atualiza status do projeto com auditoria específica"""
+        db_projeto = self.get_projeto_by_id(projeto_id)
+        if not db_projeto:
+            return None
+        
+        estado_anterior = db_projeto.estado
+        db_projeto.estado = novo_estado
+        
+        self.db.commit()
+        self.db.refresh(db_projeto)
+        
+        # Regista auditoria específica para mudança de status
+        details = f"Project status changed from {estado_anterior.value} to {novo_estado.value}"
+        if observacoes:
+            details += f" - Observations: {observacoes}"
+        
+        self.audit_service.log_action(
+            user_id=updated_by_user_id,
+            action="STATUS_CHANGE",
+            entity="Projeto",
+            entity_id=projeto_id,
+            details=details
+        )
+        
+        return db_projeto
+    
+    def update_orcamento_executado(self, projeto_id: int, novo_orcamento: float, updated_by_user_id: Optional[int] = None, observacoes: Optional[str] = None) -> Optional[Projeto]:
+        """Atualiza orçamento executado com auditoria específica"""
+        db_projeto = self.get_projeto_by_id(projeto_id)
+        if not db_projeto:
+            return None
+        
+        orcamento_anterior = float(db_projeto.orcamento_executado_kz) if db_projeto.orcamento_executado_kz else 0
+        db_projeto.orcamento_executado_kz = novo_orcamento
+        
+        self.db.commit()
+        self.db.refresh(db_projeto)
+        
+        # Regista auditoria específica para mudança de orçamento
+        details = f"Executed budget updated from {orcamento_anterior} to {novo_orcamento}"
+        if observacoes:
+            details += f" - Observations: {observacoes}"
+        
+        self.audit_service.log_action(
+            user_id=updated_by_user_id,
+            action="UPDATE",
+            entity="Projeto",
+            entity_id=projeto_id,
+            details=details
+        )
+        
+        return db_projeto
+    
+    def import_projetos(self, projetos_data: List[Dict], imported_by_user_id: Optional[int] = None) -> Dict[str, Any]:
+        """Importa projetos em lote com auditoria"""
+        sucessos = 0
+        erros = []
+        
+        for projeto_data in projetos_data:
+            try:
+                # Validar dados básicos
+                if not projeto_data.get('nome') or not projeto_data.get('provincia_id'):
+                    erros.append(f"Projeto inválido: {projeto_data.get('nome', 'Sem nome')}")
+                    continue
+                
+                # Criar projeto
+                db_projeto = Projeto(**projeto_data)
+                self.db.add(db_projeto)
+                self.db.commit()
+                self.db.refresh(db_projeto)
+                
+                # Regista auditoria
+                self.audit_service.log_action(
+                    user_id=imported_by_user_id,
+                    action="IMPORT",
+                    entity="Projeto",
+                    entity_id=db_projeto.id,
+                    details=f"Imported project {db_projeto.nome}"
+                )
+                
+                sucessos += 1
+                
+            except Exception as e:
+                erros.append(f"Erro ao importar {projeto_data.get('nome', 'projeto')}: {str(e)}")
+                self.db.rollback()
+        
+        # Regista auditoria do processo de importação
+        self.audit_service.log_action(
+            user_id=imported_by_user_id,
+            action="IMPORT",
+            entity="Projeto",
+            entity_id=None,
+            details=f"Bulk import completed: {sucessos} successful, {len(erros)} errors"
+        )
+        
+        return {
+            "sucessos": sucessos,
+            "erros": erros,
+            "total_processados": len(projetos_data)
+        }
+    
+    def export_projetos(self, filters: Dict = None, exported_by_user_id: Optional[int] = None) -> str:
+        """Exporta projetos com auditoria"""
+        projetos = self.get_projetos(**filters) if filters else self.get_projetos()
+        
+        # Regista auditoria da exportação
+        self.audit_service.log_action(
+            user_id=exported_by_user_id,
+            action="EXPORT",
+            entity="Projeto",
+            entity_id=None,
+            details=f"Exported {len(projetos)} projects"
+        )
+        
+        # Aqui seria implementada a lógica de exportação real
+        # Por agora, retornamos uma string simples
+        return f"Exported {len(projetos)} projects"
     
     def get_dashboard_stats(self) -> Dict[str, Any]:
         """Obtém estatísticas para dashboard"""

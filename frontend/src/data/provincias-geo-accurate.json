@@ -1,0 +1,323 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 1,
+        "nome": "Luanda",
+        "codigo": "LDA",
+        "capital": "Luanda",
+        "area_km2": 18283,
+        "populacao": 6945386
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [13.2167, -8.8333]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 2,
+        "nome": "Cabinda",
+        "codigo": "CAB",
+        "capital": "Cabinda",
+        "area_km2": 7270,
+        "populacao": 716076
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [12.2, -5.55]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 3,
+        "nome": "Zaire",
+        "codigo": "ZAI",
+        "capital": "M'banza-Kongo",
+        "area_km2": 40130,
+        "populacao": 594428
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [14.25, -6.26667]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 4,
+        "nome": "Uíge",
+        "codigo": "UIG",
+        "capital": "Uíge",
+        "area_km2": 58698,
+        "populacao": 1483118
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [15.05, -7.61667]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 5,
+        "nome": "Bengo",
+        "codigo": "BGO",
+        "capital": "Caxito",
+        "area_km2": 31371,
+        "populacao": 356641
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [13.66667, -8.58333]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 6,
+        "nome": "Cuanza Norte",
+        "codigo": "CNO",
+        "capital": "N'dalatando",
+        "area_km2": 24190,
+        "populacao": 443386
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [14.9167, -9.3]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 7,
+        "nome": "Cuanza Sul",
+        "codigo": "CUS",
+        "capital": "Sumbe",
+        "area_km2": 55660,
+        "populacao": 1881873
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [13.8333, -11.2]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 8,
+        "nome": "Malanje",
+        "codigo": "MAL",
+        "capital": "Malanje",
+        "area_km2": 97602,
+        "populacao": 986363
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [16.34167, -9.54167]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 9,
+        "nome": "Lunda Norte",
+        "codigo": "LNO",
+        "capital": "Dundo",
+        "area_km2": 102783,
+        "populacao": 862566
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [20.81667, -7.36667]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 10,
+        "nome": "Lunda Sul",
+        "codigo": "LSU",
+        "capital": "Saurimo",
+        "area_km2": 45649,
+        "populacao": 537587
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [20.39167, -9.66667]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 11,
+        "nome": "Moxico",
+        "codigo": "MOX",
+        "capital": "Luena",
+        "area_km2": 223023,
+        "populacao": 758568
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [19.91667, -11.78333]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 12,
+        "nome": "Bié",
+        "codigo": "BIE",
+        "capital": "Cuíto",
+        "area_km2": 70314,
+        "populacao": 1455255
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [16.93333, -12.38333]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 13,
+        "nome": "Huambo",
+        "codigo": "HUA",
+        "capital": "Huambo",
+        "area_km2": 34274,
+        "populacao": 2019555
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [15.73333, -12.76667]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 14,
+        "nome": "Benguela",
+        "codigo": "BGU",
+        "capital": "Benguela",
+        "area_km2": 31788,
+        "populacao": 2231385
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [13.40667, -12.58333]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 15,
+        "nome": "Huíla",
+        "codigo": "HUI",
+        "capital": "Lubango",
+        "area_km2": 75002,
+        "populacao": 2497422
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [13.5, -14.91667]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 16,
+        "nome": "Namibe",
+        "codigo": "NAM",
+        "capital": "Moçâmedes",
+        "area_km2": 58137,
+        "populacao": 495326
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [12.15222, -15.19583]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 17,
+        "nome": "Cunene",
+        "codigo": "CNN",
+        "capital": "Ondjiva",
+        "area_km2": 89342,
+        "populacao": 990087
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [15.73333, -16.85]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 18,
+        "nome": "Cuando Cubango",
+        "codigo": "CCU",
+        "capital": "Menongue",
+        "area_km2": 199049,
+        "populacao": 534002
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [17.69167, -14.65833]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 19,
+        "nome": "Icolo e Bengo",
+        "codigo": "IEB",
+        "capital": "Catete",
+        "area_km2": 0,
+        "populacao": 0,
+        "nota": "Nova província criada em 2024"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [13.78, -9.15]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 20,
+        "nome": "Cuando",
+        "codigo": "CUA",
+        "capital": "Mavinga",
+        "area_km2": 0,
+        "populacao": 98419,
+        "nota": "Nova província criada em 2024"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [20.36, -15.8]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 21,
+        "nome": "Cubango",
+        "codigo": "CUB",
+        "capital": "Menongue",
+        "area_km2": 0,
+        "populacao": 435583,
+        "nota": "Nova província criada em 2024"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [17.69167, -14.65833]
+      }
+    }
+  ]
+}

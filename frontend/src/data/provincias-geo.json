@@ -1,0 +1,384 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 1,
+        "nome": "Luanda",
+        "codigo": "LDA"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [13.0, -8.5],
+          [13.5, -8.5],
+          [13.5, -8.0],
+          [13.0, -8.0],
+          [13.0, -8.5]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 2,
+        "nome": "Cabinda",
+        "codigo": "CAB"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [12.0, -5.0],
+          [12.5, -5.0],
+          [12.5, -4.5],
+          [12.0, -4.5],
+          [12.0, -5.0]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 3,
+        "nome": "Zaire",
+        "codigo": "ZAI"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [13.0, -6.5],
+          [13.5, -6.5],
+          [13.5, -6.0],
+          [13.0, -6.0],
+          [13.0, -6.5]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 4,
+        "nome": "Uíge",
+        "codigo": "UIG"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [14.0, -7.0],
+          [14.5, -7.0],
+          [14.5, -6.5],
+          [14.0, -6.5],
+          [14.0, -7.0]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 5,
+        "nome": "Bengo",
+        "codigo": "BEN"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [13.5, -8.5],
+          [14.0, -8.5],
+          [14.0, -8.0],
+          [13.5, -8.0],
+          [13.5, -8.5]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 6,
+        "nome": "Cuanza Norte",
+        "codigo": "CNO"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [14.0, -8.5],
+          [14.5, -8.5],
+          [14.5, -8.0],
+          [14.0, -8.0],
+          [14.0, -8.5]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 7,
+        "nome": "Cuanza Sul",
+        "codigo": "CSU"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [14.0, -9.5],
+          [14.5, -9.5],
+          [14.5, -9.0],
+          [14.0, -9.0],
+          [14.0, -9.5]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 8,
+        "nome": "Malanje",
+        "codigo": "MAL"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [15.0, -8.5],
+          [15.5, -8.5],
+          [15.5, -8.0],
+          [15.0, -8.0],
+          [15.0, -8.5]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 9,
+        "nome": "Lunda Norte",
+        "codigo": "LNO"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [18.0, -7.5],
+          [18.5, -7.5],
+          [18.5, -7.0],
+          [18.0, -7.0],
+          [18.0, -7.5]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 10,
+        "nome": "Lunda Sul",
+        "codigo": "LSU"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [18.0, -8.5],
+          [18.5, -8.5],
+          [18.5, -8.0],
+          [18.0, -8.0],
+          [18.0, -8.5]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 11,
+        "nome": "Bie",
+        "codigo": "BIE"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [16.0, -12.0],
+          [16.5, -12.0],
+          [16.5, -11.5],
+          [16.0, -11.5],
+          [16.0, -12.0]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 12,
+        "nome": "Huambo",
+        "codigo": "HUA"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [15.5, -12.5],
+          [16.0, -12.5],
+          [16.0, -12.0],
+          [15.5, -12.0],
+          [15.5, -12.5]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 13,
+        "nome": "Huíla",
+        "codigo": "HUI"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [14.5, -14.5],
+          [15.0, -14.5],
+          [15.0, -14.0],
+          [14.5, -14.0],
+          [14.5, -14.5]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 14,
+        "nome": "Namibe",
+        "codigo": "NAM"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [12.5, -15.0],
+          [13.0, -15.0],
+          [13.0, -14.5],
+          [12.5, -14.5],
+          [12.5, -15.0]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 15,
+        "nome": "Cunene",
+        "codigo": "CUN"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [15.0, -16.0],
+          [15.5, -16.0],
+          [15.5, -15.5],
+          [15.0, -15.5],
+          [15.0, -16.0]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 16,
+        "nome": "Cuando Cubango",
+        "codigo": "CCU"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [18.0, -16.5],
+          [18.5, -16.5],
+          [18.5, -16.0],
+          [18.0, -16.0],
+          [18.0, -16.5]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 17,
+        "nome": "Moxico",
+        "codigo": "MOX"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [19.0, -12.5],
+          [19.5, -12.5],
+          [19.5, -12.0],
+          [19.0, -12.0],
+          [19.0, -12.5]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 18,
+        "nome": "Moxico Leste",
+        "codigo": "MLE"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [19.5, -12.5],
+          [20.0, -12.5],
+          [20.0, -12.0],
+          [19.5, -12.0],
+          [19.5, -12.5]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 19,
+        "nome": "Bengo",
+        "codigo": "BEN"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [13.0, -8.0],
+          [13.5, -8.0],
+          [13.5, -7.5],
+          [13.0, -7.5],
+          [13.0, -8.0]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 20,
+        "nome": "Icolo e Bengo",
+        "codigo": "IBE"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [13.5, -8.0],
+          [14.0, -8.0],
+          [14.0, -7.5],
+          [13.5, -7.5],
+          [13.5, -8.0]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 21,
+        "nome": "Cuando",
+        "codigo": "CUA"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [17.5, -16.5],
+          [18.0, -16.5],
+          [18.0, -16.0],
+          [17.5, -16.0],
+          [17.5, -16.5]
+        ]]
+      }
+    }
+  ]
+}
+

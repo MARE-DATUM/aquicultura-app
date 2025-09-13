@@ -56,6 +56,10 @@ export const usePermissions = () => {
     return hasAnyRole([USER_ROLES.ROOT, USER_ROLES.GESTAO_DADOS]);
   };
 
+  const canView = (): boolean => {
+    return hasAnyRole([USER_ROLES.ROOT, USER_ROLES.GESTAO_DADOS, USER_ROLES.VISUALIZACAO]);
+  };
+
   return {
     hasRole,
     hasAnyRole,
@@ -70,6 +74,7 @@ export const usePermissions = () => {
     canCreate,
     canEdit,
     canDelete,
+    canView,
     userRole: user?.role
   };
 };

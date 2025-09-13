@@ -5,7 +5,7 @@ import os
 
 class Settings(BaseSettings):
     # Database
-    database_url: str = os.getenv("DATABASE_URL", "postgresql://aquicultura_user:aquicultura_password@localhost:5432/aquicultura_db")
+    database_url: str = os.getenv("DATABASE_URL", "sqlite:///./aquicultura.db")
     
     # JWT
     jwt_secret: str = os.getenv("JWT_SECRET", "your-super-secret-jwt-key-change-in-production")

@@ -11,29 +11,58 @@ from app.models.audit_log import AcaoAudit
 router = APIRouter()
 
 
-@router.get("/", response_model=List[AuditLogResponse])
+@router.get("/")
 def read_audit_logs(
-    skip: int = 0,
-    limit: int = 100,
+    page: int = 1,
+    limit: int = 20,
     user_id: Optional[int] = None,
     acao: Optional[AcaoAudit] = None,
     entidade: Optional[str] = None,
     data_inicio: Optional[datetime] = None,
     data_fim: Optional[datetime] = None,
+    search: Optional[str] = None,
     current_user = Depends(require_root),
     db: Session = Depends(get_db)
 ):
-    """Lista logs de auditoria com filtros (apenas ROOT)"""
+    """Lista logs de auditoria com filtros e estatísticas (apenas ROOT)"""
     audit_service = AuditService(db)
-    return audit_service.get_audit_logs(
+    
+    # Calcular skip baseado na página
+    skip = (page - 1) * limit
+    
+    # Buscar logs
+    logs = audit_service.get_audit_logs(
         skip=skip,
         limit=limit,
         user_id=user_id,
         acao=acao,
         entidade=entidade,
         data_inicio=data_inicio,
-        data_fim=data_fim
+        data_fim=data_fim,
+        search=search
     )
+    
+    # Buscar estatísticas
+    stats = audit_service.get_audit_stats()
+    
+    # Contar total de logs para paginação
+    total = audit_service.count_audit_logs(
+        user_id=user_id,
+        acao=acao,
+        entidade=entidade,
+        data_inicio=data_inicio,
+        data_fim=data_fim,
+        search=search
+    )
+    
+    return {
+        "logs": logs,
+        "stats": stats,
+        "total": total,
+        "page": page,
+        "limit": limit,
+        "total_pages": (total + limit - 1) // limit
+    }
 
 
 @router.get("/{log_id}", response_model=AuditLogResponse)
@@ -57,17 +86,27 @@ def export_audit_logs_csv(
     entidade: Optional[str] = None,
     data_inicio: Optional[datetime] = None,
     data_fim: Optional[datetime] = None,
+    search: Optional[str] = None,
     current_user = Depends(require_root),
     db: Session = Depends(get_db)
 ):
     """Exporta logs de auditoria para CSV (apenas ROOT)"""
+    from fastapi import Response
+    
     audit_service = AuditService(db)
-    return audit_service.export_audit_logs_csv(
+    csv_content = audit_service.export_audit_logs_csv(
         user_id=user_id,
         acao=acao,
         entidade=entidade,
         data_inicio=data_inicio,
-        data_fim=data_fim
+        data_fim=data_fim,
+        search=search
+    )
+    
+    return Response(
+        content=csv_content,
+        media_type="text/csv",
+        headers={"Content-Disposition": "attachment; filename=auditoria.csv"}
     )
 
 

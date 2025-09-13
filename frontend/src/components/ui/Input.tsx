@@ -36,7 +36,7 @@ const Input: React.FC<InputProps> = ({
       <div className="relative group">
         {icon && (
           <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none z-10">
-            <div className="text-white text-opacity-70 group-focus-within:text-white transition-colors duration-200">
+            <div className="text-gray-500 group-focus-within:text-gray-700 transition-colors duration-200">
               {icon}
             </div>
           </div>
@@ -45,8 +45,8 @@ const Input: React.FC<InputProps> = ({
         <input
           id={inputId}
           className={`
-            block w-full rounded-2xl glass border border-white border-opacity-30 px-4 py-4 text-white 
-            placeholder-white placeholder-opacity-60 focus:border-white focus:border-opacity-50 focus:outline-none focus:ring-2 
+            block w-full rounded-2xl glass border border-white border-opacity-30 px-4 py-4 text-gray-900 
+            placeholder-gray-500 focus:border-white focus:border-opacity-50 focus:outline-none focus:ring-2 
             focus:ring-white focus:ring-opacity-30 transition-all duration-300 backdrop-blur-sm
             hover:border-opacity-40 hover:shadow-modern
             ${icon ? 'pl-12' : ''}

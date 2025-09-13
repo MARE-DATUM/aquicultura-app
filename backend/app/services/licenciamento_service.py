@@ -24,8 +24,8 @@ class LicenciamentoService:
         self.audit_service.log_action(
             user_id=user_id,
             action=AcaoAudit.CREATE,
-            entidade="Licenciamento",
-            entidade_id=licenciamento.id,
+            entity="Licenciamento",
+            entity_id=licenciamento.id,
             details=f"Licenciamento criado para projeto {licenciamento.projeto_id}"
         )
         
@@ -87,8 +87,8 @@ class LicenciamentoService:
         self.audit_service.log_action(
             user_id=user_id,
             action=AcaoAudit.UPDATE,
-            entidade="Licenciamento",
-            entidade_id=licenciamento.id,
+            entity="Licenciamento",
+            entity_id=licenciamento.id,
             details=f"Licenciamento atualizado para projeto {licenciamento.projeto_id}"
         )
         
@@ -104,8 +104,8 @@ class LicenciamentoService:
         self.audit_service.log_action(
             user_id=user_id,
             action=AcaoAudit.DELETE,
-            entidade="Licenciamento",
-            entidade_id=licenciamento.id,
+            entity="Licenciamento",
+            entity_id=licenciamento.id,
             details=f"Licenciamento eliminado para projeto {licenciamento.projeto_id}"
         )
         
@@ -141,8 +141,8 @@ class LicenciamentoService:
         self.audit_service.log_action(
             user_id=user_id,
             action=AcaoAudit.STATUS_CHANGE,
-            entidade="Licenciamento",
-            entidade_id=licenciamento.id,
+            entity="Licenciamento",
+            entity_id=licenciamento.id,
             details=f"Status alterado de {old_status.value} para {status.value}"
         )
         

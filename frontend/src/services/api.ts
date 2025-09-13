@@ -210,6 +210,26 @@ class ApiService {
     return response.data;
   }
 
+  // Admin endpoints
+  async exportDatabase(format: 'json' | 'sql' = 'json'): Promise<Blob> {
+    const response = await this.api.get(`/admin/export/database?format=${format}`, {
+      responseType: 'blob'
+    });
+    return response.data;
+  }
+
+  async exportTable(tableName: string, format: 'json' | 'csv' = 'json'): Promise<Blob> {
+    const response = await this.api.get(`/admin/export/table/${tableName}?format=${format}`, {
+      responseType: 'blob'
+    });
+    return response.data;
+  }
+
+  async getDatabaseStats(): Promise<any> {
+    const response: AxiosResponse<any> = await this.api.get('/admin/stats');
+    return response.data;
+  }
+
   // Eixos 5W2H endpoints
   async getEixos5W2H(projetoId?: number, periodo?: string, search?: string): Promise<Eixo5W2H[]> {
     const params = new URLSearchParams();
@@ -287,7 +307,11 @@ class ApiService {
   }
 
   // Auditoria endpoints
-  async getAuditLogs(filters: AuditLogFilters = {}): Promise<AuditLog[]> {
+  async getAuditLogs(filters: AuditLogFilters & { page?: number; limit?: number } = {}): Promise<{
+    logs: AuditLog[];
+    stats: any;
+    total: number;
+  }> {
     const params = new URLSearchParams();
     Object.entries(filters).forEach(([key, value]) => {
       if (value !== undefined && value !== null && value !== '') {
@@ -295,7 +319,11 @@ class ApiService {
       }
     });
     
-    const response: AxiosResponse<AuditLog[]> = await this.api.get(`/auditoria?${params.toString()}`);
+    const response: AxiosResponse<{
+      logs: AuditLog[];
+      stats: any;
+      total: number;
+    }> = await this.api.get(`/auditoria?${params.toString()}`);
     return response.data;
   }
 

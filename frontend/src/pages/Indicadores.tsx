@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { 
   Plus, 
   Search, 
@@ -7,13 +7,10 @@ import {
   Edit, 
   Trash2, 
   Download,
-  Upload,
   BarChart3,
   TrendingUp,
   Target,
   Activity,
-  Calendar,
-  FileText,
   AlertTriangle,
   CheckCircle
 } from 'lucide-react';
@@ -25,14 +22,13 @@ import {
   CartesianGrid, 
   Tooltip, 
   ResponsiveContainer,
-  LineChart,
-  Line,
   PieChart,
   Pie,
   Cell
 } from 'recharts';
 import { apiService } from '../services/api';
 import { usePermissions } from '../hooks/usePermissions';
+import { useDebounce } from '../hooks/useDebounce';
 import type { Indicador, Projeto, IndicadorFilters, Trimestre } from '../types/simple';
 import { PageHeader, Button, Input, Card, Badge, EmptyState } from '../components/ui';
 
@@ -54,14 +50,12 @@ const Indicadores: React.FC = () => {
     search: ''
   });
 
+  // Debounce do termo de pesquisa
+  const debouncedSearchTerm = useDebounce(searchTerm, 500);
+
   const trimestres: Trimestre[] = ['T1', 'T2', 'T3', 'T4'];
-  const chartColors = ['#3B82F6', '#10B981', '#F59E0B', '#EF4444'];
 
-  useEffect(() => {
-    loadData();
-  }, [filters]);
-
-  const loadData = async () => {
+  const loadData = useCallback(async () => {
     try {
       setLoading(true);
       const [indicadoresData, projetosData] = await Promise.all([
@@ -75,16 +69,24 @@ const Indicadores: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [filters]);
 
   const handleSearch = (term: string) => {
     setSearchTerm(term);
-    setFilters({ ...filters, search: term });
   };
 
   const handleFilterChange = (key: keyof IndicadorFilters, value: any) => {
     setFilters({ ...filters, [key]: value });
   };
+
+  useEffect(() => {
+    loadData();
+  }, [loadData]);
+
+  // Efeito separado para atualizar filtros quando o termo de pesquisa com debounce muda
+  useEffect(() => {
+    setFilters(prev => ({ ...prev, search: debouncedSearchTerm }));
+  }, [debouncedSearchTerm]);
 
   const clearFilters = () => {
     setFilters({

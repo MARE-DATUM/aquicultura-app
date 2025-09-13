@@ -18,29 +18,31 @@ import {
   BarChart3, 
   FileText, 
   TrendingUp,
-  Fish,
   MapPin,
   Calendar,
   DollarSign,
   Activity,
-  Users,
-  CheckCircle,
-  Clock,
   AlertTriangle,
   ArrowUpRight,
   ArrowDownRight,
   Eye,
-  RefreshCw
+  RefreshCw,
+  Download,
+  Database
 } from 'lucide-react';
 import { apiService } from '../services/api';
 import type { DashboardStats, MapaProvincia } from '../types/simple';
-import { PageHeader, SkeletonCard, Button } from '../components/ui';
+import { PageHeader, SkeletonCard, Button, Card } from '../components/ui';
+import { AdminExport } from '../components/AdminExport';
+import { useAuth } from '../contexts/AuthContext';
 
 const Dashboard: React.FC = () => {
+  const { user } = useAuth();
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [mapaData, setMapaData] = useState<MapaProvincia[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [showExport, setShowExport] = useState(false);
 
   const loadDashboardData = async (isRefresh = false) => {
     if (isRefresh) {
@@ -223,11 +225,27 @@ const Dashboard: React.FC = () => {
               <RefreshCw className={`h-4 w-4 mr-2 ${refreshing ? 'animate-spin' : ''}`} />
               Atualizar
             </Button>
+            {user?.role === 'ROOT' && (
+              <Button 
+                variant="primary" 
+                onClick={() => setShowExport(!showExport)}
+              >
+                <Database className="h-4 w-4 mr-2" />
+                Exportar Dados
+              </Button>
+            )}
           </div>
         }
       />
       
       <div className="p-6 space-y-8">
+
+      {/* Seção de Exportação (apenas para ROOT) */}
+      {showExport && user?.role === 'ROOT' && (
+        <div className="mb-8">
+          <AdminExport />
+        </div>
+      )}
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">

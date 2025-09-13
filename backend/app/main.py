@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Depends
+from fastapi import FastAPI, Depends, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
 from slowapi import Limiter, _rate_limit_exceeded_handler
@@ -7,7 +7,7 @@ from slowapi.errors import RateLimitExceeded
 from app.core.config import settings, get_cors_origins
 from app.db.database import engine
 from app.db.database import Base
-from app.api import auth, users, projetos, indicadores, licenciamentos, eixos_5w2h, auditoria, provincias, dashboard
+from app.api import auth, users, projetos, indicadores, licenciamentos, eixos_5w2h, auditoria, provincias, dashboard, admin
 
 # Cria tabelas no banco de dados
 Base.metadata.create_all(bind=engine)
@@ -36,7 +36,18 @@ app.add_middleware(
     allow_credentials=True,
     allow_methods=["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
     allow_headers=["*"],
+    expose_headers=["*"],
 )
+
+# Middleware para controlar cache (especialmente para Brave)
+@app.middleware("http")
+async def add_cache_control_header(request: Request, call_next):
+    response = await call_next(request)
+    # Adiciona headers para evitar cache agressivo do Brave
+    response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
+    response.headers["Pragma"] = "no-cache"
+    response.headers["Expires"] = "0"
+    return response
 
 # Configura middleware de segurança
 app.add_middleware(
@@ -54,6 +65,7 @@ app.include_router(eixos_5w2h.router, prefix="/api/eixos-5w2h", tags=["eixos-5w2
 app.include_router(auditoria.router, prefix="/api/auditoria", tags=["auditoria"])
 app.include_router(provincias.router, prefix="/api/provincias", tags=["provincias"])
 app.include_router(dashboard.router, prefix="/api/dashboard", tags=["dashboard"])
+app.include_router(admin.router, prefix="/api/admin", tags=["admin"])
 
 
 @app.get("/")

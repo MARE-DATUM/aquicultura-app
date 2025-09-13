@@ -21,7 +21,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           const userData = await apiService.getCurrentUser();
           setUser(userData);
           setToken(storedToken);
-        } catch (error) {
+        } catch {
           // Token inválido, limpar storage
           localStorage.removeItem('access_token');
           localStorage.removeItem('refresh_token');
@@ -49,8 +49,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       // Obter dados do utilizador
       const userData = await apiService.getCurrentUser();
       setUser(userData);
-    } catch (error) {
-      throw error;
     } finally {
       setIsLoading(false);
     }

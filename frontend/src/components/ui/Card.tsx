@@ -22,11 +22,7 @@ interface CardFooterProps {
   className?: string;
 }
 
-const Card: React.FC<CardProps> & {
-  Header: React.FC<CardHeaderProps>;
-  Content: React.FC<CardContentProps>;
-  Footer: React.FC<CardFooterProps>;
-} = ({ 
+const CardComponent: React.FC<CardProps> = React.memo(({ 
   children, 
   className = '', 
   padding = 'md',
@@ -48,34 +44,41 @@ const Card: React.FC<CardProps> & {
       {children}
     </div>
   );
-};
+});
 
-const CardHeader: React.FC<CardHeaderProps> = ({ children, className = '' }) => {
+const CardHeader: React.FC<CardHeaderProps> = React.memo(({ children, className = '' }) => {
   return (
     <div className={`border-b border-gray-200 pb-4 mb-6 ${className}`}>
       {children}
     </div>
   );
-};
+});
 
-const CardContent: React.FC<CardContentProps> = ({ children, className = '' }) => {
+const CardContent: React.FC<CardContentProps> = React.memo(({ children, className = '' }) => {
   return (
     <div className={className}>
       {children}
     </div>
   );
-};
+});
 
-const CardFooter: React.FC<CardFooterProps> = ({ children, className = '' }) => {
+const CardFooter: React.FC<CardFooterProps> = React.memo(({ children, className = '' }) => {
   return (
     <div className={`border-t border-gray-200 pt-4 mt-6 ${className}`}>
       {children}
     </div>
   );
-};
+});
 
-Card.Header = CardHeader;
-Card.Content = CardContent;
-Card.Footer = CardFooter;
+CardHeader.displayName = 'CardHeader';
+CardContent.displayName = 'CardContent';
+CardFooter.displayName = 'CardFooter';
+
+// Create the compound component
+const Card = Object.assign(CardComponent, {
+  Header: CardHeader,
+  Content: CardContent,
+  Footer: CardFooter
+});
 
 export default Card;

@@ -24,8 +24,8 @@ class Eixo5W2HService:
         self.audit_service.log_action(
             user_id=user_id,
             action=AcaoAudit.CREATE,
-            entidade="Eixo5W2H",
-            entidade_id=eixo.id,
+            entity="Eixo5W2H",
+            entity_id=eixo.id,
             details=f"Eixo 5W2H criado para projeto {eixo.projeto_id} - período {eixo.periodo.value}"
         )
         
@@ -87,8 +87,8 @@ class Eixo5W2HService:
         self.audit_service.log_action(
             user_id=user_id,
             action=AcaoAudit.UPDATE,
-            entidade="Eixo5W2H",
-            entidade_id=eixo.id,
+            entity="Eixo5W2H",
+            entity_id=eixo.id,
             details=f"Eixo 5W2H atualizado para projeto {eixo.projeto_id}"
         )
         
@@ -104,8 +104,8 @@ class Eixo5W2HService:
         self.audit_service.log_action(
             user_id=user_id,
             action=AcaoAudit.DELETE,
-            entidade="Eixo5W2H",
-            entidade_id=eixo.id,
+            entity="Eixo5W2H",
+            entity_id=eixo.id,
             details=f"Eixo 5W2H eliminado para projeto {eixo.projeto_id}"
         )
         

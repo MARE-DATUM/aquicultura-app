@@ -27,8 +27,8 @@ class IndicadorService:
         self.audit_service.log_action(
             user_id=user_id,
             action=AcaoAudit.CREATE,
-            entidade="Indicador",
-            entidade_id=indicador.id,
+            entity="Indicador",
+            entity_id=indicador.id,
             details=f"Indicador '{indicador.nome}' criado para projeto {indicador.projeto_id}"
         )
         
@@ -87,8 +87,8 @@ class IndicadorService:
         self.audit_service.log_action(
             user_id=user_id,
             action=AcaoAudit.UPDATE,
-            entidade="Indicador",
-            entidade_id=indicador.id,
+            entity="Indicador",
+            entity_id=indicador.id,
             details=f"Indicador '{indicador.nome}' atualizado"
         )
         
@@ -104,8 +104,8 @@ class IndicadorService:
         self.audit_service.log_action(
             user_id=user_id,
             action=AcaoAudit.DELETE,
-            entidade="Indicador",
-            entidade_id=indicador.id,
+            entity="Indicador",
+            entity_id=indicador.id,
             details=f"Indicador '{indicador.nome}' eliminado"
         )
         
@@ -114,7 +114,7 @@ class IndicadorService:
         return True
 
     def get_indicadores_stats(self) -> dict:
-        """Obtém estatísticas de indicadores para dashboard"""
+        """Obtém estatísticas de indicadores para o dashboard"""
         total_indicadores = self.db.query(Indicador).count()
         
         # Agregação por trimestre
@@ -238,3 +238,53 @@ class IndicadorService:
             })
         
         return output.getvalue()
+
+    def get_producao_total(self) -> float:
+        """Obtém produção total (soma dos valores atuais dos indicadores)"""
+        result = self.db.query(Indicador.valor_actual).all()
+        return sum(float(item.valor_actual) for item in result if item.valor_actual)
+
+    def get_familias_beneficiadas(self) -> int:
+        """Obtém número de famílias beneficiadas"""
+        result = self.db.query(Indicador).filter(
+            or_(
+                Indicador.nome.ilike('%família%'),
+                Indicador.nome.ilike('%familia%'),
+                Indicador.nome.ilike('%beneficiar%'),
+                Indicador.nome.ilike('%pessoa%'),
+                Indicador.nome.ilike('%habitante%')
+            )
+        ).all()
+        
+        # Soma os valores atuais desses indicadores
+        return sum(int(float(item.valor_actual)) for item in result if item.valor_actual)
+
+    def get_empregos_criados(self) -> int:
+        """Obtém número de empregos criados"""
+        result = self.db.query(Indicador).filter(
+            or_(
+                Indicador.nome.ilike('%emprego%'),
+                Indicador.nome.ilike('%trabalho%'),
+                Indicador.nome.ilike('%funcionário%'),
+                Indicador.nome.ilike('%funcionario%'),
+                Indicador.nome.ilike('%colaborador%'),
+                Indicador.nome.ilike('%posto%')
+            )
+        ).all()
+        
+        # Soma os valores atuais desses indicadores
+        return sum(int(float(item.valor_actual)) for item in result if item.valor_actual)
+
+    def get_meta_total(self) -> float:
+        """Obtém meta total (soma das metas dos indicadores)"""
+        result = self.db.query(Indicador.meta).all()
+        return sum(float(item.meta) for item in result if item.meta)
+
+    def get_execucao_media_percentual(self) -> float:
+        """Obtém execução média percentual"""
+        meta_total = self.get_meta_total()
+        producao_total = self.get_producao_total()
+        
+        if meta_total > 0:
+            return round((producao_total / meta_total) * 100, 2)
+        return 0.0

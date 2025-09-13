@@ -15,7 +15,6 @@ import {
   Fish,
   Shield,
   Bell,
-  Search,
   ChevronDown
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
@@ -62,7 +61,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       show: true
     },
     {
-      name: '5W2H',
+      name: 'Plano 7 Passos',
       href: '/eixos-5w2h',
       icon: FileText,
       show: true

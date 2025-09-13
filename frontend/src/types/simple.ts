@@ -13,9 +13,13 @@ export type AcaoAudit = 'LOGIN' | 'LOGOUT' | 'CREATE' | 'UPDATE' | 'DELETE' | 'I
 export interface User {
   id: number;
   email: string;
+  username: string;
   full_name: string;
   role: UserRole;
   is_active: boolean;
+  phone?: string;
+  department?: string;
+  position?: string;
   created_at: string;
   updated_at?: string;
   last_login?: string;
@@ -38,9 +42,18 @@ export interface Projeto {
   responsavel: string;
   orcamento_previsto_kz: number;
   orcamento_executado_kz: number;
+  orcamento_total?: number;
+  orcamento_executado?: number;
   data_inicio_prevista: string;
   data_fim_prevista: string;
+  data_inicio?: string;
+  data_fim?: string;
   descricao?: string;
+  objectivos?: string;
+  beneficiarios?: string;
+  coordenador?: string;
+  contacto_coordenador?: string;
+  observacoes?: string;
   created_at: string;
   updated_at?: string;
   provincia?: Provincia;
@@ -54,7 +67,10 @@ export interface Indicador {
   meta: number;
   valor_actual: number;
   periodo_referencia: Trimestre;
+  ano_referencia?: number;
   fonte_dados: string;
+  metodologia_calculo?: string;
+  observacoes?: string;
   created_at: string;
   updated_at?: string;
   projeto?: Projeto;
@@ -84,10 +100,16 @@ export interface Eixo5W2H {
 export interface Licenciamento {
   id: number;
   projeto_id: number;
+  tipo_licenca?: string;
+  numero_licenca?: string;
   status: StatusLicenciamento;
   entidade_responsavel: EntidadeResponsavel;
   data_submissao: string;
   data_decisao?: string;
+  data_aprovacao?: string;
+  data_validade?: string;
+  condicoes?: string;
+  documentos_necessarios?: string;
   observacoes?: string;
   created_at: string;
   updated_at?: string;
@@ -286,6 +308,7 @@ export interface AuditLogFilters {
   entidade?: string;
   data_inicio?: string;
   data_fim?: string;
+  search?: string;
   page?: number;
   limit?: number;
 }

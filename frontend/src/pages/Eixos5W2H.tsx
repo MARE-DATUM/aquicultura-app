@@ -1,12 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { 
   Target, 
-  Calendar, 
-  MapPin, 
-  Users, 
   DollarSign, 
   CheckCircle, 
-  Clock, 
   AlertTriangle,
   Plus,
   Edit,
@@ -15,7 +11,6 @@ import {
   Filter,
   Search,
   FileText,
-  TrendingUp,
   BarChart3,
   RefreshCw
 } from 'lucide-react';
@@ -43,7 +38,7 @@ const Eixos5W2H: React.FC = () => {
   
   const { canCreate, canEdit, canDelete } = usePermissions();
 
-  const loadData = async (isRefresh = false) => {
+  const loadData = useCallback(async (isRefresh = false) => {
     if (isRefresh) {
       setRefreshing(true);
     } else {
@@ -63,14 +58,14 @@ const Eixos5W2H: React.FC = () => {
       
       setEixos(eixosData);
       setProjetos(projetosData);
-    } catch (err: any) {
+    } catch (err) {
       console.error('Erro ao carregar dados 5W2H:', err);
       setError('Erro ao carregar dados. Tente novamente.');
     } finally {
       setLoading(false);
       setRefreshing(false);
     }
-  };
+  }, [filtroProjeto, filtroPeriodo, searchTerm]);
 
   const handleRefresh = () => {
     loadData(true);
@@ -86,14 +81,14 @@ const Eixos5W2H: React.FC = () => {
   };
 
   const handleDeleteEixo = async (eixoId: number) => {
-    if (!window.confirm('Tem certeza que deseja eliminar este eixo 5W2H?')) {
+    if (!window.confirm('Tem certeza que deseja eliminar este eixo do plano?')) {
       return;
     }
     
     try {
       await apiService.deleteEixo5W2H(eixoId);
       await loadData();
-    } catch (err: any) {
+    } catch (err) {
       console.error('Erro ao eliminar eixo:', err);
       setError('Erro ao eliminar eixo. Tente novamente.');
     }
@@ -151,7 +146,7 @@ const Eixos5W2H: React.FC = () => {
 
   useEffect(() => {
     loadData();
-  }, []);
+  }, [loadData]);
 
   useEffect(() => {
     const timeoutId = setTimeout(() => {
@@ -160,16 +155,16 @@ const Eixos5W2H: React.FC = () => {
       }
     }, 500);
     return () => clearTimeout(timeoutId);
-  }, [searchTerm]);
+  }, [searchTerm, loadData]);
 
   if (loading) {
     return (
       <>
         <PageHeader
-          title="Planeamento 5W2H"
+          title="Plano 7 Passos"
           description="Análise e planeamento estratégico dos projetos de aquicultura"
           breadcrumbs={[
-            { label: '5W2H', current: true }
+            { label: 'Plano 7 Passos', current: true }
           ]}
         />
         <div className="p-6 space-y-6">
@@ -201,10 +196,10 @@ const Eixos5W2H: React.FC = () => {
   return (
     <>
       <PageHeader
-        title="Planeamento 5W2H"
+        title="Plano 7 Passos"
         description="Análise e planeamento estratégico dos projetos de aquicultura"
         breadcrumbs={[
-          { label: '5W2H', current: true }
+          { label: 'Plano 7 Passos', current: true }
         ]}
         actions={
           <div className="flex space-x-2">
@@ -374,8 +369,8 @@ const Eixos5W2H: React.FC = () => {
         {eixos.length === 0 ? (
           <EmptyState
             icon={Target}
-            title="Nenhum eixo 5W2H encontrado"
-            description="Não há eixos 5W2H que correspondam aos filtros aplicados."
+            title="Nenhum eixo do plano encontrado"
+            description="Não há eixos do plano que correspondam aos filtros aplicados."
             action={
               canCreate() ? {
                 label: "Criar Primeiro Eixo",
@@ -434,38 +429,38 @@ const Eixos5W2H: React.FC = () => {
 
                 <div className="space-y-3">
                   <div>
-                    <h4 className="text-sm font-medium text-gray-500 mb-1">O que (What)</h4>
+                    <h4 className="text-sm font-medium text-gray-500 mb-1">O que</h4>
                     <p className="text-sm text-gray-900 line-clamp-2">{eixo.what}</p>
                   </div>
 
                   <div>
-                    <h4 className="text-sm font-medium text-gray-500 mb-1">Porquê (Why)</h4>
+                    <h4 className="text-sm font-medium text-gray-500 mb-1">Porquê</h4>
                     <p className="text-sm text-gray-900 line-clamp-2">{eixo.why}</p>
                   </div>
 
                   <div>
-                    <h4 className="text-sm font-medium text-gray-500 mb-1">Onde (Where)</h4>
+                    <h4 className="text-sm font-medium text-gray-500 mb-1">Onde</h4>
                     <p className="text-sm text-gray-900 line-clamp-2">{eixo.where}</p>
                   </div>
 
                   <div>
-                    <h4 className="text-sm font-medium text-gray-500 mb-1">Quando (When)</h4>
+                    <h4 className="text-sm font-medium text-gray-500 mb-1">Quando</h4>
                     <p className="text-sm text-gray-900 line-clamp-2">{eixo.when}</p>
                   </div>
 
                   <div>
-                    <h4 className="text-sm font-medium text-gray-500 mb-1">Quem (Who)</h4>
+                    <h4 className="text-sm font-medium text-gray-500 mb-1">Quem</h4>
                     <p className="text-sm text-gray-900 line-clamp-2">{eixo.who}</p>
                   </div>
 
                   <div>
-                    <h4 className="text-sm font-medium text-gray-500 mb-1">Como (How)</h4>
+                    <h4 className="text-sm font-medium text-gray-500 mb-1">Como</h4>
                     <p className="text-sm text-gray-900 line-clamp-2">{eixo.how}</p>
                   </div>
 
                   <div className="flex items-center justify-between pt-3 border-t border-gray-200">
                     <div>
-                      <h4 className="text-sm font-medium text-gray-500">Quanto (How Much)</h4>
+                      <h4 className="text-sm font-medium text-gray-500">Quanto</h4>
                       <p className="text-lg font-semibold text-gray-900">
                         {formatCurrency(eixo.how_much_kz)}
                       </p>
@@ -509,7 +504,7 @@ const Eixos5W2H: React.FC = () => {
             <div className="p-6">
               <div className="flex items-center justify-between mb-6">
                 <h2 className="text-xl font-semibold text-gray-900">
-                  {eixoSelecionado ? 'Detalhes do Eixo 5W2H' : 'Novo Eixo 5W2H'}
+                  {eixoSelecionado ? 'Detalhes do Eixo do Plano' : 'Novo Eixo do Plano'}
                 </h2>
                 <Button
                   variant="secondary"
@@ -552,30 +547,30 @@ const Eixos5W2H: React.FC = () => {
                     </div>
 
                     <div>
-                      <h3 className="text-lg font-medium text-gray-900 mb-4">Análise 5W2H</h3>
+                      <h3 className="text-lg font-medium text-gray-900 mb-4">Análise do Plano</h3>
                       <div className="space-y-4">
                         <div>
-                          <label className="block text-sm font-medium text-gray-700">O que (What)</label>
+                          <label className="block text-sm font-medium text-gray-700">O que</label>
                           <p className="mt-1 text-sm text-gray-900">{eixoSelecionado.what}</p>
                         </div>
                         <div>
-                          <label className="block text-sm font-medium text-gray-700">Porquê (Why)</label>
+                          <label className="block text-sm font-medium text-gray-700">Porquê</label>
                           <p className="mt-1 text-sm text-gray-900">{eixoSelecionado.why}</p>
                         </div>
                         <div>
-                          <label className="block text-sm font-medium text-gray-700">Onde (Where)</label>
+                          <label className="block text-sm font-medium text-gray-700">Onde</label>
                           <p className="mt-1 text-sm text-gray-900">{eixoSelecionado.where}</p>
                         </div>
                         <div>
-                          <label className="block text-sm font-medium text-gray-700">Quando (When)</label>
+                          <label className="block text-sm font-medium text-gray-700">Quando</label>
                           <p className="mt-1 text-sm text-gray-900">{eixoSelecionado.when}</p>
                         </div>
                         <div>
-                          <label className="block text-sm font-medium text-gray-700">Quem (Who)</label>
+                          <label className="block text-sm font-medium text-gray-700">Quem</label>
                           <p className="mt-1 text-sm text-gray-900">{eixoSelecionado.who}</p>
                         </div>
                         <div>
-                          <label className="block text-sm font-medium text-gray-700">Como (How)</label>
+                          <label className="block text-sm font-medium text-gray-700">Como</label>
                           <p className="mt-1 text-sm text-gray-900">{eixoSelecionado.how}</p>
                         </div>
                       </div>
@@ -637,7 +632,7 @@ const Eixos5W2H: React.FC = () => {
                     Formulário de Criação
                   </h3>
                   <p className="text-gray-500 mb-6">
-                    O formulário de criação de eixos 5W2H será implementado em breve.
+                    O formulário de criação de eixos do plano será implementado em breve.
                   </p>
                   <Button
                     variant="secondary"

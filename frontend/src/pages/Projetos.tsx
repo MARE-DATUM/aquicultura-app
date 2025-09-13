@@ -20,8 +20,10 @@ import {
 } from 'lucide-react';
 import { apiService } from '../services/api';
 import { usePermissions } from '../hooks/usePermissions';
+import { useDebounce } from '../hooks/useDebounce';
 import type { Projeto, Provincia, ProjetoFilters } from '../types/simple';
-import { PageHeader, Button, Input, Card, Badge, EmptyState } from '../components/ui';
+import { PageHeader, Button, Input, Card, Badge, EmptyState, Alert } from '../components/ui';
+import { ProjetoForm } from '../components/forms/ProjetoForm';
 
 const Projetos: React.FC = () => {
   const [projetos, setProjetos] = useState<Projeto[]>([]);
@@ -32,6 +34,9 @@ const Projetos: React.FC = () => {
   const [selectedProjeto, setSelectedProjeto] = useState<Projeto | null>(null);
   const [showModal, setShowModal] = useState(false);
   const [modalType, setModalType] = useState<'create' | 'edit' | 'view'>('view');
+  const [showForm, setShowForm] = useState(false);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
+  const [deleteSuccess, setDeleteSuccess] = useState<string | null>(null);
 
   const { canCreate, canEdit, canDelete } = usePermissions();
 
@@ -43,9 +48,17 @@ const Projetos: React.FC = () => {
     search: ''
   });
 
+  // Debounce do termo de pesquisa
+  const debouncedSearchTerm = useDebounce(searchTerm, 500);
+
   useEffect(() => {
     loadData();
   }, [filters]);
+
+  // Efeito separado para atualizar filtros quando o termo de pesquisa com debounce muda
+  useEffect(() => {
+    setFilters(prev => ({ ...prev, search: debouncedSearchTerm }));
+  }, [debouncedSearchTerm]);
 
   const loadData = async () => {
     try {
@@ -65,7 +78,6 @@ const Projetos: React.FC = () => {
 
   const handleSearch = (term: string) => {
     setSearchTerm(term);
-    setFilters({ ...filters, search: term });
   };
 
   const handleFilterChange = (key: keyof ProjetoFilters, value: any) => {
@@ -84,13 +96,25 @@ const Projetos: React.FC = () => {
   };
 
   const openModal = (type: 'create' | 'edit' | 'view', projeto?: Projeto) => {
-    setModalType(type);
-    setSelectedProjeto(projeto || null);
-    setShowModal(true);
+    if (type === 'view') {
+      setModalType(type);
+      setSelectedProjeto(projeto || null);
+      setShowModal(true);
+    } else {
+      // Para criar ou editar, usar o novo formulário
+      setSelectedProjeto(projeto || null);
+      setShowForm(true);
+    }
   };
 
   const closeModal = () => {
     setShowModal(false);
+    setSelectedProjeto(null);
+  };
+
+  const handleFormSuccess = () => {
+    loadData();
+    setShowForm(false);
     setSelectedProjeto(null);
   };
 
@@ -99,10 +123,15 @@ const Projetos: React.FC = () => {
     
     if (window.confirm(`Tem certeza que deseja eliminar o projeto "${projeto.nome}"?`)) {
       try {
+        setDeleteError(null);
+        setDeleteSuccess(null);
         await apiService.deleteProjeto(projeto.id);
+        setDeleteSuccess(`Projeto "${projeto.nome}" eliminado com sucesso!`);
         await loadData();
-      } catch (error) {
-        console.error('Erro ao eliminar projeto:', error);
+        setTimeout(() => setDeleteSuccess(null), 5000);
+      } catch (error: any) {
+        setDeleteError(error.message || 'Erro ao eliminar projeto');
+        setTimeout(() => setDeleteError(null), 5000);
       }
     }
   };
@@ -494,14 +523,37 @@ const Projetos: React.FC = () => {
         </div>
       </div>
 
-      {/* Modal será implementado em componente separado */}
-      {showModal && (
+      {/* Alerts de feedback */}
+      {deleteError && (
+        <div className="fixed top-4 right-4 z-50">
+          <Alert variant="danger">
+            {deleteError}
+          </Alert>
+        </div>
+      )}
+      {deleteSuccess && (
+        <div className="fixed top-4 right-4 z-50">
+          <Alert variant="success">
+            {deleteSuccess}
+          </Alert>
+        </div>
+      )}
+
+      {/* Formulário de criação/edição */}
+      <ProjetoForm
+        isOpen={showForm}
+        onClose={() => setShowForm(false)}
+        projeto={selectedProjeto}
+        onSuccess={handleFormSuccess}
+        provincias={provincias}
+      />
+
+      {/* Modal de visualização */}
+      {showModal && modalType === 'view' && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-lg p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
             <h2 className="text-xl font-semibold mb-4">
-              {modalType === 'create' && 'Criar Novo Projeto'}
-              {modalType === 'edit' && 'Editar Projeto'}
-              {modalType === 'view' && 'Detalhes do Projeto'}
+              Detalhes do Projeto
             </h2>
             
             {selectedProjeto && modalType === 'view' && (

@@ -37,10 +37,11 @@ class AuditService:
     def get_audit_logs(
         self,
         user_id: Optional[int] = None,
-        action: Optional[AcaoAudit] = None,
-        entity: Optional[str] = None,
-        start_date: Optional[datetime] = None,
-        end_date: Optional[datetime] = None,
+        acao: Optional[AcaoAudit] = None,
+        entidade: Optional[str] = None,
+        data_inicio: Optional[datetime] = None,
+        data_fim: Optional[datetime] = None,
+        search: Optional[str] = None,
         skip: int = 0,
         limit: int = 100
     ):
@@ -49,14 +50,22 @@ class AuditService:
         
         if user_id:
             query = query.filter(AuditLog.user_id == user_id)
-        if action:
-            query = query.filter(AuditLog.acao == action)
-        if entity:
-            query = query.filter(AuditLog.entidade == entity)
-        if start_date:
-            query = query.filter(AuditLog.timestamp >= start_date)
-        if end_date:
-            query = query.filter(AuditLog.timestamp <= end_date)
+        if acao:
+            query = query.filter(AuditLog.acao == acao)
+        if entidade:
+            query = query.filter(AuditLog.entidade == entidade)
+        if data_inicio:
+            query = query.filter(AuditLog.timestamp >= data_inicio)
+        if data_fim:
+            query = query.filter(AuditLog.timestamp <= data_fim)
+        if search:
+            # Pesquisar em detalhes, entidade e ação
+            search_filter = f"%{search}%"
+            query = query.filter(
+                (AuditLog.detalhes.ilike(search_filter)) |
+                (AuditLog.entidade.ilike(search_filter)) |
+                (AuditLog.acao.ilike(search_filter))
+            )
         
         return query.order_by(AuditLog.timestamp.desc()).offset(skip).limit(limit).all()
     
@@ -98,3 +107,88 @@ class AuditService:
                 for user in usuarios_ativos
             ]
         }
+    
+    def export_audit_logs_csv(
+        self,
+        user_id: Optional[int] = None,
+        acao: Optional[AcaoAudit] = None,
+        entidade: Optional[str] = None,
+        data_inicio: Optional[datetime] = None,
+        data_fim: Optional[datetime] = None,
+        search: Optional[str] = None
+    ) -> str:
+        """Exporta logs de auditoria para CSV"""
+        import csv
+        import io
+        
+        # Obter logs com os mesmos filtros
+        logs = self.get_audit_logs(
+            user_id=user_id,
+            acao=acao,
+            entidade=entidade,
+            data_inicio=data_inicio,
+            data_fim=data_fim,
+            search=search,
+            skip=0,
+            limit=10000  # Limite alto para exportação
+        )
+        
+        # Criar CSV
+        output = io.StringIO()
+        writer = csv.writer(output)
+        
+        # Cabeçalho
+        writer.writerow([
+            'ID', 'Data/Hora', 'Utilizador', 'Email', 'Ação', 
+            'Entidade', 'ID Entidade', 'IP', 'Detalhes'
+        ])
+        
+        # Dados
+        for log in logs:
+            writer.writerow([
+                log.id,
+                log.timestamp.isoformat() if log.timestamp else '',
+                log.user.full_name if log.user else 'Sistema',
+                log.user.email if log.user else '',
+                log.acao.value if log.acao else '',
+                log.entidade or '',
+                log.entidade_id or '',
+                log.ip or '',
+                log.detalhes or ''
+            ])
+        
+        return output.getvalue()
+    
+    def count_audit_logs(
+        self,
+        user_id: Optional[int] = None,
+        acao: Optional[AcaoAudit] = None,
+        entidade: Optional[str] = None,
+        data_inicio: Optional[datetime] = None,
+        data_fim: Optional[datetime] = None,
+        search: Optional[str] = None
+    ) -> int:
+        """Conta logs de auditoria com filtros"""
+        query = self.db.query(AuditLog)
+        
+        if user_id:
+            query = query.filter(AuditLog.user_id == user_id)
+        
+        if acao:
+            query = query.filter(AuditLog.acao == acao)
+        
+        if entidade:
+            query = query.filter(AuditLog.entidade == entidade)
+        
+        if data_inicio:
+            query = query.filter(AuditLog.timestamp >= data_inicio)
+        
+        if data_fim:
+            query = query.filter(AuditLog.timestamp <= data_fim)
+        
+        if search:
+            query = query.filter(
+                AuditLog.detalhes.ilike(f"%{search}%")
+            )
+        
+        return query.count()
