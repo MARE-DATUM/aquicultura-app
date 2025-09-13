@@ -106,8 +106,8 @@ def import_indicadores(
     return indicador_service.import_indicadores_csv(file_content, current_user.id)
 
 
-@router.get("/export")
-def export_indicadores(
+@router.get("/export/csv")
+def export_indicadores_csv(
     projeto_id: Optional[int] = None,
     periodo_referencia: Optional[Trimestre] = None,
     current_user = Depends(get_current_active_user),
@@ -115,4 +115,49 @@ def export_indicadores(
 ):
     """Exporta indicadores para CSV (todos os utilizadores)"""
     indicador_service = IndicadorService(db)
-    return indicador_service.export_indicadores_csv(projeto_id, periodo_referencia)
+    csv_content = indicador_service.export_indicadores_csv(projeto_id, periodo_referencia)
+    
+    from fastapi.responses import Response
+    return Response(
+        content=csv_content,
+        media_type="text/csv",
+        headers={"Content-Disposition": "attachment; filename=indicadores.csv"}
+    )
+
+
+@router.get("/export/excel")
+def export_indicadores_excel(
+    projeto_id: Optional[int] = None,
+    periodo_referencia: Optional[Trimestre] = None,
+    current_user = Depends(get_current_active_user),
+    db: Session = Depends(get_db)
+):
+    """Exporta indicadores para Excel (todos os utilizadores)"""
+    indicador_service = IndicadorService(db)
+    excel_content = indicador_service.export_indicadores_excel(projeto_id, periodo_referencia)
+    
+    from fastapi.responses import Response
+    return Response(
+        content=excel_content,
+        media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        headers={"Content-Disposition": "attachment; filename=indicadores.xlsx"}
+    )
+
+
+@router.get("/export/pdf")
+def export_indicadores_pdf(
+    projeto_id: Optional[int] = None,
+    periodo_referencia: Optional[Trimestre] = None,
+    current_user = Depends(get_current_active_user),
+    db: Session = Depends(get_db)
+):
+    """Exporta indicadores para PDF (todos os utilizadores)"""
+    indicador_service = IndicadorService(db)
+    pdf_content = indicador_service.export_indicadores_pdf(projeto_id, periodo_referencia)
+    
+    from fastapi.responses import Response
+    return Response(
+        content=pdf_content,
+        media_type="application/pdf",
+        headers={"Content-Disposition": "attachment; filename=indicadores.pdf"}
+    )

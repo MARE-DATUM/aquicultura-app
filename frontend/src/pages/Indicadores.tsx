@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Plus, 
   Search, 
@@ -26,64 +26,87 @@ import {
   Pie,
   Cell
 } from 'recharts';
-import { apiService } from '../services/api';
 import { usePermissions } from '../hooks/usePermissions';
 import { useDebounce } from '../hooks/useDebounce';
+import { 
+  useIndicadores, 
+  useProjetos, 
+  useDeleteIndicador,
+  useIndicadoresCompletos
+} from '../hooks/useIndicadores';
 import type { Indicador, Projeto, IndicadorFilters, Trimestre } from '../types/simple';
 import { PageHeader, Button, Input, Card, Badge, EmptyState } from '../components/ui';
+import IndicadorForm from '../components/forms/IndicadorForm';
+import ExportModal from '../components/forms/ExportModal';
 
 const Indicadores: React.FC = () => {
-  const [indicadores, setIndicadores] = useState<Indicador[]>([]);
-  const [projetos, setProjetos] = useState<Projeto[]>([]);
-  const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [showFilters, setShowFilters] = useState(false);
   const [selectedIndicador, setSelectedIndicador] = useState<Indicador | null>(null);
   const [showModal, setShowModal] = useState(false);
   const [modalType, setModalType] = useState<'create' | 'edit' | 'view'>('view');
+  const [showForm, setShowForm] = useState(false);
+  const [showExportModal, setShowExportModal] = useState(false);
+  
+  // Paginação
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage] = useState(50);
 
   const { canCreate, canEdit, canDelete } = usePermissions();
 
   const [filters, setFilters] = useState<IndicadorFilters>({
     projeto_id: undefined,
     periodo_referencia: undefined,
-    search: ''
+    search: '',
+    page: currentPage,
+    limit: itemsPerPage
   });
 
   // Debounce do termo de pesquisa
   const debouncedSearchTerm = useDebounce(searchTerm, 500);
 
+  // React Query hooks
+  const { 
+    data: indicadores = [], 
+    isLoading: loadingIndicadores, 
+    error: indicadoresError 
+  } = useIndicadores(filters);
+  
+  const { 
+    data: projetos = [], 
+    isLoading: loadingProjetos 
+  } = useProjetos();
+
+  // Hook para dados completos (sem paginação) para KPIs
+  const { 
+    data: indicadoresCompletos = [], 
+    isLoading: loadingCompletos 
+  } = useIndicadoresCompletos();
+
+  const deleteIndicadorMutation = useDeleteIndicador();
+
+  // Estados derivados
+  const loading = loadingIndicadores || loadingProjetos || loadingCompletos;
+  const indicadoresData = indicadores || [];
+  const totalIndicadores = indicadoresCompletos.length; // Total real de indicadores
+
   const trimestres: Trimestre[] = ['T1', 'T2', 'T3', 'T4'];
 
-  const loadData = useCallback(async () => {
-    try {
-      setLoading(true);
-      const [indicadoresData, projetosData] = await Promise.all([
-        apiService.getIndicadores(filters),
-        apiService.getProjetos()
-      ]);
-      setIndicadores(indicadoresData);
-      setProjetos(projetosData);
-    } catch (error) {
-      console.error('Erro ao carregar dados:', error);
-    } finally {
-      setLoading(false);
-    }
-  }, [filters]);
 
   const handleSearch = (term: string) => {
     setSearchTerm(term);
   };
 
   const handleFilterChange = (key: keyof IndicadorFilters, value: any) => {
-    setFilters({ ...filters, [key]: value });
+    setFilters({ ...filters, [key]: value, page: 1 }); // Reset para primeira página
   };
 
-  useEffect(() => {
-    loadData();
-  }, [loadData]);
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    setFilters({ ...filters, page });
+  };
 
-  // Efeito separado para atualizar filtros quando o termo de pesquisa com debounce muda
+  // Efeito para atualizar filtros quando o termo de pesquisa com debounce muda
   useEffect(() => {
     setFilters(prev => ({ ...prev, search: debouncedSearchTerm }));
   }, [debouncedSearchTerm]);
@@ -92,15 +115,23 @@ const Indicadores: React.FC = () => {
     setFilters({
       projeto_id: undefined,
       periodo_referencia: undefined,
-      search: ''
+      search: '',
+      page: 1,
+      limit: itemsPerPage
     });
     setSearchTerm('');
+    setCurrentPage(1);
   };
 
   const openModal = (type: 'create' | 'edit' | 'view', indicador?: Indicador) => {
-    setModalType(type);
-    setSelectedIndicador(indicador || null);
-    setShowModal(true);
+    if (type === 'create' || type === 'edit') {
+      setSelectedIndicador(indicador || null);
+      setShowForm(true);
+    } else {
+      setModalType(type);
+      setSelectedIndicador(indicador || null);
+      setShowModal(true);
+    }
   };
 
   const closeModal = () => {
@@ -108,16 +139,21 @@ const Indicadores: React.FC = () => {
     setSelectedIndicador(null);
   };
 
+  const closeForm = () => {
+    setShowForm(false);
+    setSelectedIndicador(null);
+  };
+
+  const handleFormSuccess = (indicador: Indicador) => {
+    closeForm();
+    // Refresh data - React Query will handle this automatically
+  };
+
   const handleDelete = async (indicador: Indicador) => {
     if (!canDelete()) return;
     
     if (window.confirm(`Tem certeza que deseja eliminar o indicador "${indicador.nome}"?`)) {
-      try {
-        await apiService.deleteIndicador(indicador.id);
-        await loadData();
-      } catch (error) {
-        console.error('Erro ao eliminar indicador:', error);
-      }
+      deleteIndicadorMutation.mutate(indicador.id);
     }
   };
 
@@ -142,13 +178,14 @@ const Indicadores: React.FC = () => {
     return { icon: AlertTriangle, color: 'text-red-600', label: 'Crítico' };
   };
 
-  // Dados para gráficos
-  console.log('Debug - Indicadores carregados:', indicadores.length);
+  // Dados para gráficos - usar dados completos para cálculos corretos
+  console.log('Debug - Indicadores carregados (página):', indicadoresData.length);
+  console.log('Debug - Indicadores completos:', indicadoresCompletos.length);
   console.log('Debug - Projetos carregados:', projetos.length);
   
   const chartData = {
     byTrimestre: trimestres.map(trimestre => {
-      const indicadoresTrimestre = indicadores.filter(i => i.periodo_referencia === trimestre);
+      const indicadoresTrimestre = indicadoresCompletos.filter(i => i.periodo_referencia === trimestre);
       const totalMeta = indicadoresTrimestre.reduce((sum, i) => sum + Number(i.meta), 0);
       const totalAtual = indicadoresTrimestre.reduce((sum, i) => sum + Number(i.valor_actual), 0);
       return {
@@ -160,7 +197,7 @@ const Indicadores: React.FC = () => {
     }),
     byProjeto: projetos
       .map(projeto => {
-        const indicadoresProjeto = indicadores.filter(i => i.projeto_id === projeto.id);
+        const indicadoresProjeto = indicadoresCompletos.filter(i => i.projeto_id === projeto.id);
         const totalMeta = indicadoresProjeto.reduce((sum, i) => sum + Number(i.meta), 0);
         const totalAtual = indicadoresProjeto.reduce((sum, i) => sum + Number(i.valor_actual), 0);
         return {
@@ -177,7 +214,7 @@ const Indicadores: React.FC = () => {
     statusDistribution: (() => {
       let acimaMeta = 0, dentroMeta = 0, abaixoMeta = 0, critico = 0;
       
-      indicadores.forEach(i => {
+      indicadoresCompletos.forEach(i => {
         const meta = Number(i.meta);
         const atual = Number(i.valor_actual);
         
@@ -226,6 +263,31 @@ const Indicadores: React.FC = () => {
   if (chartData.byProjeto.length > 0) {
     console.log('Debug - Primeiro projeto do gráfico:', chartData.byProjeto[0]);
     console.log('Debug - Valores de execução:', chartData.byProjeto.map(p => p.execucao));
+  }
+
+  // Tratamento de erro
+  if (indicadoresError) {
+    return (
+      <>
+        <PageHeader
+          title="Indicadores"
+          description="Registo e acompanhamento de indicadores trimestrais"
+          breadcrumbs={[{ label: 'Indicadores', current: true }]}
+        />
+        <div className="p-6">
+          <Card className="p-8 text-center">
+            <AlertTriangle className="h-12 w-12 text-red-500 mx-auto mb-4" />
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">Erro ao carregar dados</h3>
+            <p className="text-gray-600 mb-4">
+              Não foi possível carregar os indicadores. Tente novamente em alguns momentos.
+            </p>
+            <Button onClick={() => window.location.reload()}>
+              Tentar Novamente
+            </Button>
+          </Card>
+        </div>
+      </>
+    );
   }
 
   if (loading) {
@@ -292,7 +354,11 @@ const Indicadores: React.FC = () => {
 
           {/* Ações */}
           <div className="flex gap-2">
-            <Button variant="outline" className="flex items-center gap-2">
+            <Button 
+              variant="outline" 
+              className="flex items-center gap-2"
+              onClick={() => setShowExportModal(true)}
+            >
               <Download className="h-4 w-4" />
               Exportar
             </Button>
@@ -366,7 +432,8 @@ const Indicadores: React.FC = () => {
               </div>
               <div className="ml-4">
                 <p className="text-sm font-medium text-gray-600">Total Indicadores</p>
-                <p className="text-2xl font-bold text-gray-900">{indicadores.length}</p>
+                <p className="text-2xl font-bold text-gray-900">{totalIndicadores}</p>
+                <p className="text-xs text-gray-500">Mostrando {indicadoresData.length} de {totalIndicadores}</p>
               </div>
             </div>
           </Card>
@@ -379,7 +446,7 @@ const Indicadores: React.FC = () => {
               <div className="ml-4">
                 <p className="text-sm font-medium text-gray-600">Meta Total</p>
                 <p className="text-2xl font-bold text-gray-900">
-                  {indicadores.reduce((sum, i) => sum + Number(i.meta), 0).toLocaleString()}
+                  {indicadoresCompletos.reduce((sum, i) => sum + Number(i.meta), 0).toLocaleString()}
                 </p>
               </div>
             </div>
@@ -393,7 +460,7 @@ const Indicadores: React.FC = () => {
               <div className="ml-4">
                 <p className="text-sm font-medium text-gray-600">Realizado</p>
                 <p className="text-2xl font-bold text-gray-900">
-                  {indicadores.reduce((sum, i) => sum + Number(i.valor_actual), 0).toLocaleString()}
+                  {indicadoresCompletos.reduce((sum, i) => sum + Number(i.valor_actual), 0).toLocaleString()}
                 </p>
               </div>
             </div>
@@ -407,8 +474,8 @@ const Indicadores: React.FC = () => {
               <div className="ml-4">
                 <p className="text-sm font-medium text-gray-600">Execução Média</p>
                 <p className="text-2xl font-bold text-gray-900">
-                  {indicadores.length > 0 
-                    ? ((indicadores.reduce((sum, i) => sum + Number(i.valor_actual), 0) / indicadores.reduce((sum, i) => sum + Number(i.meta), 0)) * 100).toFixed(1)
+                  {indicadoresCompletos.length > 0 
+                    ? ((indicadoresCompletos.reduce((sum, i) => sum + Number(i.valor_actual), 0) / indicadoresCompletos.reduce((sum, i) => sum + Number(i.meta), 0)) * 100).toFixed(1)
                     : 0}%
                 </p>
               </div>
@@ -508,7 +575,7 @@ const Indicadores: React.FC = () => {
         </div>
 
         {/* Lista de Indicadores */}
-        {indicadores.length === 0 ? (
+        {indicadoresData.length === 0 ? (
           <EmptyState
             title="Nenhum indicador encontrado"
             description="Não existem indicadores que correspondam aos critérios de pesquisa."
@@ -555,7 +622,7 @@ const Indicadores: React.FC = () => {
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
-                  {indicadores.map((indicador) => {
+                  {indicadoresData.map((indicador) => {
                     const projeto = projetos.find(p => p.id === indicador.projeto_id);
                     const progress = calculateProgress(indicador.valor_actual, indicador.meta);
                     const status = getProgressStatus(progress);
@@ -648,15 +715,60 @@ const Indicadores: React.FC = () => {
             </div>
           </Card>
         )}
+
+        {/* Controles de Paginação */}
+        {totalIndicadores > itemsPerPage && (
+          <Card className="p-4">
+            <div className="flex items-center justify-between">
+              <div className="text-sm text-gray-700">
+                Mostrando {((currentPage - 1) * itemsPerPage) + 1} a {Math.min(currentPage * itemsPerPage, indicadoresData.length)} de {totalIndicadores} indicadores
+              </div>
+              <div className="flex items-center space-x-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handlePageChange(currentPage - 1)}
+                  disabled={currentPage === 1}
+                >
+                  Anterior
+                </Button>
+                
+                <div className="flex items-center space-x-1">
+                  {Array.from({ length: Math.min(5, Math.ceil(totalIndicadores / itemsPerPage)) }, (_, i) => {
+                    const page = i + 1;
+                    return (
+                      <Button
+                        key={page}
+                        variant={currentPage === page ? "primary" : "outline"}
+                        size="sm"
+                        onClick={() => handlePageChange(page)}
+                        className="w-8 h-8 p-0"
+                      >
+                        {page}
+                      </Button>
+                    );
+                  })}
+                </div>
+                
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handlePageChange(currentPage + 1)}
+                  disabled={currentPage >= Math.ceil(totalIndicadores / itemsPerPage)}
+                >
+                  Próximo
+                </Button>
+              </div>
+            </div>
+          </Card>
+        )}
       </div>
 
-      {/* Modal será implementado em componente separado */}
+      {/* Modal de detalhes do indicador */}
       {showModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-lg p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
             <h2 className="text-xl font-semibold mb-4">
-              {modalType === 'create' && 'Criar Novo Indicador'}
-              {modalType === 'edit' && 'Editar Indicador'}
               {modalType === 'view' && 'Detalhes do Indicador'}
             </h2>
             
@@ -695,6 +807,27 @@ const Indicadores: React.FC = () => {
           </div>
         </div>
       )}
+
+      {/* Formulário de criação/edição */}
+      {showForm && (
+        <IndicadorForm
+          indicador={selectedIndicador || undefined}
+          onSuccess={handleFormSuccess}
+          onCancel={closeForm}
+          isEditing={!!selectedIndicador}
+        />
+      )}
+
+      {/* Modal de Exportação */}
+      <ExportModal
+        isOpen={showExportModal}
+        onClose={() => setShowExportModal(false)}
+        projetos={projetos}
+        filters={{
+          projeto_id: filters.projeto_id,
+          periodo_referencia: filters.periodo_referencia
+        }}
+      />
     </>
   );
 };

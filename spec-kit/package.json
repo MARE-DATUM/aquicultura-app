@@ -1,0 +1,16 @@
+{
+  "name": "spec-kit",
+  "version": "1.0.0",
+  "description": "**Kit de ferramentas para Spec-Driven Development no projeto Aquicultura App**",
+  "main": "mcp-server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.18.0"
+  }
+}

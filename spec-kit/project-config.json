@@ -1,0 +1,45 @@
+{
+  "project": {
+    "name": "Aquicultura App",
+    "description": "Sistema de gestão de aquicultura com dashboard, mapas e auditoria",
+    "version": "1.0.0",
+    "techStack": {
+      "frontend": "React + TypeScript + Vite",
+      "backend": "Python + FastAPI + SQLAlchemy",
+      "database": "PostgreSQL",
+      "infrastructure": "Docker + Docker Compose"
+    },
+    "directories": {
+      "frontend": "frontend/",
+      "backend": "backend/",
+      "docs": "docs/",
+      "specs": "spec-kit/specs/"
+    }
+  },
+  "standards": {
+    "codeCoverage": 80,
+    "maxCyclomaticComplexity": 10,
+    "maxFunctionLength": 50,
+    "maxFileLength": 300
+  },
+  "processes": {
+    "codeReview": true,
+    "automatedTesting": true,
+    "documentationRequired": true,
+    "specificationRequired": true
+  },
+  "tools": {
+    "testing": {
+      "frontend": "Vitest + Playwright",
+      "backend": "pytest + FastAPI TestClient"
+    },
+    "linting": {
+      "frontend": "ESLint + Prettier",
+      "backend": "Black + isort + flake8"
+    },
+    "documentation": {
+      "api": "OpenAPI/Swagger",
+      "general": "Markdown"
+    }
+  }
+}

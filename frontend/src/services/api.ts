@@ -201,12 +201,36 @@ class ApiService {
     return response.data;
   }
 
-  async exportIndicadores(projetoId?: number, periodoReferencia?: string): Promise<string> {
+  async exportIndicadoresCSV(projetoId?: number, periodoReferencia?: string): Promise<Blob> {
     const params = new URLSearchParams();
     if (projetoId) params.append('projeto_id', projetoId.toString());
     if (periodoReferencia) params.append('periodo_referencia', periodoReferencia);
     
-    const response: AxiosResponse<string> = await this.api.get(`/indicadores/export?${params.toString()}`);
+    const response = await this.api.get(`/indicadores/export/csv?${params.toString()}`, {
+      responseType: 'blob'
+    });
+    return response.data;
+  }
+
+  async exportIndicadoresExcel(projetoId?: number, periodoReferencia?: string): Promise<Blob> {
+    const params = new URLSearchParams();
+    if (projetoId) params.append('projeto_id', projetoId.toString());
+    if (periodoReferencia) params.append('periodo_referencia', periodoReferencia);
+    
+    const response = await this.api.get(`/indicadores/export/excel?${params.toString()}`, {
+      responseType: 'blob'
+    });
+    return response.data;
+  }
+
+  async exportIndicadoresPDF(projetoId?: number, periodoReferencia?: string): Promise<Blob> {
+    const params = new URLSearchParams();
+    if (projetoId) params.append('projeto_id', projetoId.toString());
+    if (periodoReferencia) params.append('periodo_referencia', periodoReferencia);
+    
+    const response = await this.api.get(`/indicadores/export/pdf?${params.toString()}`, {
+      responseType: 'blob'
+    });
     return response.data;
   }
 

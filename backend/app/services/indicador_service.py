@@ -59,6 +59,10 @@ class IndicadorService:
                 )
             )
         
+        # Se limit for muito alto, não aplicar limite para obter todos os registos
+        if limit >= 10000:
+            return query.all()
+        
         return query.offset(skip).limit(limit).all()
 
     def get_indicador_by_id(self, indicador_id: int) -> Optional[Indicador]:
@@ -288,3 +292,21 @@ class IndicadorService:
         if meta_total > 0:
             return round((producao_total / meta_total) * 100, 2)
         return 0.0
+
+    def export_indicadores_csv(self, projeto_id: Optional[int] = None, periodo_referencia: Optional[Trimestre] = None) -> str:
+        """Exporta indicadores para CSV usando o serviço de exportação"""
+        from app.services.export_service import ExportService
+        export_service = ExportService(self.db)
+        return export_service.export_indicadores_csv(projeto_id, periodo_referencia)
+
+    def export_indicadores_excel(self, projeto_id: Optional[int] = None, periodo_referencia: Optional[Trimestre] = None) -> bytes:
+        """Exporta indicadores para Excel usando o serviço de exportação"""
+        from app.services.export_service import ExportService
+        export_service = ExportService(self.db)
+        return export_service.export_indicadores_excel(projeto_id, periodo_referencia)
+
+    def export_indicadores_pdf(self, projeto_id: Optional[int] = None, periodo_referencia: Optional[Trimestre] = None) -> bytes:
+        """Exporta indicadores para PDF usando o serviço de exportação"""
+        from app.services.export_service import ExportService
+        export_service = ExportService(self.db)
+        return export_service.export_indicadores_pdf(projeto_id, periodo_referencia)

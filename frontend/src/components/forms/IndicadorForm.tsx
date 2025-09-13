@@ -1,311 +1,474 @@
 import React, { useState, useEffect } from 'react';
-import { apiService } from '../../services/api';
+import { useForm, Controller } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
 import { 
-  FormModal, 
-  FormSection, 
-  FormGroup, 
-  Input, 
-  Select, 
-  TextArea,
-  Alert 
-} from '../ui';
-import type { Indicador, Projeto, Trimestre } from '../../types/simple';
+  Plus, 
+  X, 
+  AlertCircle, 
+  CheckCircle, 
+  Loader2,
+  Building2,
+  Calendar,
+  Target,
+  Activity,
+  FileText
+} from 'lucide-react';
+import { Button, Input, Card, Badge } from '../ui';
+import { useProjetos } from '../../hooks/useIndicadores';
+import { apiService } from '../../services/api';
+import type { Indicador, Projeto, IndicadorCreate, Trimestre } from '../../types/simple';
+
+// Schema de validação
+const indicadorSchema = z.object({
+  nome: z.string()
+    .min(1, 'Nome é obrigatório')
+    .min(3, 'Nome deve ter pelo menos 3 caracteres')
+    .max(100, 'Nome deve ter no máximo 100 caracteres'),
+  projeto_id: z.number()
+    .min(1, 'Projeto é obrigatório'),
+  periodo_referencia: z.enum(['T1', 'T2', 'T3', 'T4']).refine(val => val !== undefined, {
+    message: 'Trimestre é obrigatório'
+  }),
+  meta: z.number()
+    .min(0.01, 'Meta deve ser maior que zero')
+    .max(999999999, 'Meta muito alta'),
+  valor_actual: z.number()
+    .min(0, 'Valor atual não pode ser negativo')
+    .max(999999999, 'Valor atual muito alto'),
+  unidade: z.string()
+    .min(1, 'Unidade é obrigatória')
+    .max(20, 'Unidade deve ter no máximo 20 caracteres'),
+  fonte_dados: z.string()
+    .min(1, 'Fonte de dados é obrigatória')
+    .max(200, 'Fonte de dados deve ter no máximo 200 caracteres')
+});
+
+type IndicadorFormData = z.infer<typeof indicadorSchema>;
 
 interface IndicadorFormProps {
-  isOpen: boolean;
-  onClose: () => void;
-  indicador?: Indicador | null;
-  onSuccess: () => void;
-  projetos: Projeto[];
+  indicador?: Indicador;
+  onSuccess: (indicador: Indicador) => void;
+  onCancel: () => void;
+  isEditing?: boolean;
 }
 
-export const IndicadorForm: React.FC<IndicadorFormProps> = ({
-  isOpen,
-  onClose,
+const IndicadorForm: React.FC<IndicadorFormProps> = ({
   indicador,
   onSuccess,
-  projetos
+  onCancel,
+  isEditing = false
 }) => {
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [formData, setFormData] = useState({
-    projeto_id: '',
-    nome: '',
-    unidade: '',
-    meta: '',
-    valor_actual: '',
-    periodo_referencia: 'T1',
-    ano_referencia: new Date().getFullYear().toString(),
-    fonte_dados: '',
-    metodologia_calculo: '',
-    observacoes: ''
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
+  const [submitSuccess, setSubmitSuccess] = useState(false);
+
+  const { data: projetos = [], isLoading: loadingProjetos } = useProjetos();
+
+  const {
+    control,
+    handleSubmit,
+    formState: { errors, isValid },
+    reset,
+    watch
+  } = useForm<IndicadorFormData>({
+    resolver: zodResolver(indicadorSchema),
+    defaultValues: {
+      nome: indicador?.nome || '',
+      projeto_id: indicador?.projeto_id || 0,
+      periodo_referencia: indicador?.periodo_referencia || 'T1',
+      meta: indicador?.meta ? Number(indicador.meta) : 0,
+      valor_actual: indicador?.valor_actual ? Number(indicador.valor_actual) : 0,
+      unidade: indicador?.unidade || '',
+      fonte_dados: indicador?.fonte_dados || ''
+    },
+    mode: 'onChange'
   });
 
-  const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
-
-  // Períodos (trimestres)
-  const periodos = [
+  const trimestres: { value: Trimestre; label: string }[] = [
     { value: 'T1', label: '1º Trimestre' },
     { value: 'T2', label: '2º Trimestre' },
     { value: 'T3', label: '3º Trimestre' },
     { value: 'T4', label: '4º Trimestre' }
   ];
 
-  // Anos disponíveis (últimos 5 anos + próximos 2)
-  const currentYear = new Date().getFullYear();
-  const anos = Array.from({ length: 7 }, (_, i) => {
-    const year = currentYear - 5 + i;
-    return { value: year.toString(), label: year.toString() };
-  });
+  const unidadesComuns = [
+    'toneladas', 'kg', 'famílias', 'pessoas', 'empregos', 
+    'licenças', '%', 'hectares', 'metros', 'unidades'
+  ];
 
-  useEffect(() => {
-    if (indicador) {
-      setFormData({
-        projeto_id: String(indicador.projeto_id || ''),
-        nome: indicador.nome || '',
-        unidade: indicador.unidade || '',
-        meta: String(indicador.meta || ''),
-        valor_actual: String(indicador.valor_actual || ''),
-        periodo_referencia: indicador.periodo_referencia || 'T1',
-        ano_referencia: String(indicador.ano_referencia || new Date().getFullYear()),
-        fonte_dados: indicador.fonte_dados || '',
-        metodologia_calculo: indicador.metodologia_calculo || '',
-        observacoes: indicador.observacoes || ''
-      });
-    } else {
-      // Reset form para novo indicador
-      setFormData({
-        projeto_id: '',
-        nome: '',
-        unidade: '',
-        meta: '',
-        valor_actual: '',
-        periodo_referencia: 'T1',
-        ano_referencia: new Date().getFullYear().toString(),
-        fonte_dados: '',
-        metodologia_calculo: '',
-        observacoes: ''
-      });
-    }
-    setValidationErrors({});
-    setError(null);
-  }, [indicador]);
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
-    // Limpar erro de validação ao alterar o campo
-    if (validationErrors[name]) {
-      setValidationErrors(prev => ({ ...prev, [name]: '' }));
-    }
-  };
-
-  const validateForm = (): boolean => {
-    const errors: Record<string, string> = {};
-
-    if (!formData.projeto_id) errors.projeto_id = 'Projeto é obrigatório';
-    if (!formData.nome) errors.nome = 'Nome é obrigatório';
-    if (!formData.unidade) errors.unidade = 'Unidade é obrigatória';
-    if (!formData.meta) errors.meta = 'Meta é obrigatória';
-    if (!formData.valor_actual) errors.valor_actual = 'Valor actual é obrigatório';
-    if (!formData.fonte_dados) errors.fonte_dados = 'Fonte de dados é obrigatória';
-
-    // Validar que valores sejam números positivos
-    if (formData.meta && parseFloat(formData.meta) < 0) {
-      errors.meta = 'Meta deve ser um valor positivo';
-    }
-    if (formData.valor_actual && parseFloat(formData.valor_actual) < 0) {
-      errors.valor_actual = 'Valor actual deve ser positivo';
-    }
-
-    setValidationErrors(errors);
-    return Object.keys(errors).length === 0;
-  };
-
-  const handleSubmit = async () => {
-    if (!validateForm()) {
-      setError('Por favor, corrija os erros no formulário');
-      return;
-    }
-
-    setIsLoading(true);
-    setError(null);
+  const onSubmit = async (data: IndicadorFormData) => {
+    setIsSubmitting(true);
+    setSubmitError(null);
+    setSubmitSuccess(false);
 
     try {
-      const payload = {
-        ...formData,
-        projeto_id: parseInt(formData.projeto_id),
-        meta: parseFloat(formData.meta),
-        valor_actual: parseFloat(formData.valor_actual),
-        ano_referencia: parseInt(formData.ano_referencia),
-        periodo_referencia: formData.periodo_referencia as Trimestre
+      const indicadorData: IndicadorCreate = {
+        ...data,
+        meta: data.meta,
+        valor_actual: data.valor_actual
       };
 
-      if (indicador) {
-        // Atualizar indicador existente
-        await apiService.updateIndicador(indicador.id, payload);
+      let result: Indicador;
+      
+      if (isEditing && indicador) {
+        result = await apiService.updateIndicador(indicador.id, indicadorData);
       } else {
-        // Criar novo indicador
-        await apiService.createIndicador(payload);
+        result = await apiService.createIndicador(indicadorData);
       }
 
-      onSuccess();
-      onClose();
-    } catch (err: any) {
-      setError(err.message || 'Erro ao salvar indicador');
+      setSubmitSuccess(true);
+      
+      // Reset form after successful submission
+      setTimeout(() => {
+        reset();
+        onSuccess(result);
+      }, 1500);
+
+    } catch (error: any) {
+      console.error('Erro ao salvar indicador:', error);
+      setSubmitError(
+        error.response?.data?.detail || 
+        'Erro ao salvar indicador. Tente novamente.'
+      );
     } finally {
-      setIsLoading(false);
+      setIsSubmitting(false);
     }
+  };
+
+  const handleCancel = () => {
+    reset();
+    onCancel();
   };
 
   // Calcular progresso
-  const calcularProgresso = () => {
-    if (formData.meta && formData.valor_actual) {
-      const meta = parseFloat(formData.meta);
-      const actual = parseFloat(formData.valor_actual);
-      if (meta > 0) {
-        return ((actual / meta) * 100).toFixed(1);
-      }
-    }
-    return '0';
-  };
+  const meta = watch('meta');
+  const valorAtual = watch('valor_actual');
+  const progresso = meta > 0 ? Math.min((valorAtual / meta) * 100, 100) : 0;
 
   return (
-    <FormModal
-      isOpen={isOpen}
-      onClose={onClose}
-      title={indicador ? 'Editar Indicador' : 'Criar Novo Indicador'}
-      subtitle={indicador ? `Editando: ${indicador.nome}` : 'Preencha os dados do novo indicador'}
-      onSubmit={handleSubmit}
-      isLoading={isLoading}
-      error={error}
-      size="lg"
-    >
-      <FormSection title="Informações Básicas">
-        <FormGroup label="Projeto" required error={validationErrors.projeto_id}>
-          <Select
-            name="projeto_id"
-            value={formData.projeto_id}
-            onChange={handleChange}
-            options={projetos.map(p => ({ value: p.id, label: p.nome }))}
-            placeholder="Selecione o projeto"
-          />
-        </FormGroup>
-
-        <FormGroup label="Nome do Indicador" required error={validationErrors.nome}>
-          <Input
-            name="nome"
-            value={formData.nome}
-            onChange={handleChange}
-            placeholder="Ex: Produção de Tilápia"
-          />
-        </FormGroup>
-
-        <FormGroup label="Unidade de Medida" required error={validationErrors.unidade}>
-          <Input
-            name="unidade"
-            value={formData.unidade}
-            onChange={handleChange}
-            placeholder="Ex: Toneladas, Unidades, Hectares"
-          />
-        </FormGroup>
-      </FormSection>
-
-      <FormSection title="Valores e Metas">
-        <div className="grid grid-cols-2 gap-4">
-          <FormGroup label="Meta" required error={validationErrors.meta}>
-            <Input
-              type="number"
-              name="meta"
-              value={formData.meta}
-              onChange={handleChange}
-              placeholder="0.00"
-              min="0"
-              step="0.01"
-            />
-          </FormGroup>
-
-          <FormGroup label="Valor Actual" required error={validationErrors.valor_actual}>
-            <Input
-              type="number"
-              name="valor_actual"
-              value={formData.valor_actual}
-              onChange={handleChange}
-              placeholder="0.00"
-              min="0"
-              step="0.01"
-            />
-          </FormGroup>
-        </div>
-
-        {formData.meta && formData.valor_actual && (
-          <div className="mt-4 p-4 bg-blue-50 rounded-lg">
-            <div className="flex justify-between items-center mb-2">
-              <span className="text-sm font-medium text-gray-700">Progresso</span>
-              <span className="text-sm font-bold text-blue-600">{calcularProgresso()}%</span>
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+      <Card className="w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+        <div className="p-6">
+          {/* Header */}
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-blue-100 rounded-lg">
+                {isEditing ? (
+                  <Activity className="h-6 w-6 text-blue-600" />
+                ) : (
+                  <Plus className="h-6 w-6 text-blue-600" />
+                )}
+              </div>
+              <div>
+                <h2 className="text-xl font-semibold text-gray-900">
+                  {isEditing ? 'Editar Indicador' : 'Novo Indicador'}
+                </h2>
+                <p className="text-sm text-gray-600">
+                  {isEditing 
+                    ? 'Atualize as informações do indicador' 
+                    : 'Preencha os dados para criar um novo indicador'
+                  }
+                </p>
+              </div>
             </div>
-            <div className="w-full bg-gray-200 rounded-full h-2">
-              <div
-                className="bg-blue-600 h-2 rounded-full transition-all duration-300"
-                style={{ width: `${Math.min(100, parseFloat(calcularProgresso()))}%` }}
-              />
-            </div>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleCancel}
+              className="text-gray-400 hover:text-gray-600"
+            >
+              <X className="h-5 w-5" />
+            </Button>
           </div>
-        )}
-      </FormSection>
 
-      <FormSection title="Período de Referência">
-        <div className="grid grid-cols-2 gap-4">
-          <FormGroup label="Trimestre" required>
-            <Select
-              name="periodo_referencia"
-              value={formData.periodo_referencia}
-              onChange={handleChange}
-              options={periodos}
-            />
-          </FormGroup>
+          {/* Success Message */}
+          {submitSuccess && (
+            <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg flex items-center gap-3">
+              <CheckCircle className="h-5 w-5 text-green-600" />
+              <div>
+                <p className="text-sm font-medium text-green-800">
+                  Indicador {isEditing ? 'atualizado' : 'criado'} com sucesso!
+                </p>
+                <p className="text-xs text-green-600">
+                  Redirecionando...
+                </p>
+              </div>
+            </div>
+          )}
 
-          <FormGroup label="Ano" required>
-            <Select
-              name="ano_referencia"
-              value={formData.ano_referencia}
-              onChange={handleChange}
-              options={anos}
-            />
-          </FormGroup>
+          {/* Error Message */}
+          {submitError && (
+            <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg flex items-center gap-3">
+              <AlertCircle className="h-5 w-5 text-red-600" />
+              <div>
+                <p className="text-sm font-medium text-red-800">
+                  Erro ao salvar indicador
+                </p>
+                <p className="text-xs text-red-600">{submitError}</p>
+              </div>
+            </div>
+          )}
+
+          {/* Form */}
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+            {/* Nome do Indicador */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Nome do Indicador *
+              </label>
+              <Controller
+                name="nome"
+                control={control}
+                render={({ field }) => (
+                  <Input
+                    {...field}
+                    placeholder="Ex: Produção de Peixe"
+                    className={errors.nome ? 'border-red-300' : ''}
+                  />
+                )}
+              />
+              {errors.nome && (
+                <p className="mt-1 text-sm text-red-600">{errors.nome.message}</p>
+              )}
+            </div>
+
+            {/* Projeto e Trimestre */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Projeto *
+                </label>
+                <Controller
+                  name="projeto_id"
+                  control={control}
+                  render={({ field }) => (
+                    <div className="relative">
+                      <Building2 className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                      <select
+                        {...field}
+                        className={`w-full pl-10 pr-3 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
+                          errors.projeto_id ? 'border-red-300' : 'border-gray-300'
+                        }`}
+                        disabled={loadingProjetos}
+                      >
+                        <option value={0}>
+                          {loadingProjetos ? 'Carregando...' : 'Selecione um projeto'}
+                        </option>
+                        {projetos.map((projeto) => (
+                          <option key={projeto.id} value={projeto.id}>
+                            {projeto.nome}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
+                />
+                {errors.projeto_id && (
+                  <p className="mt-1 text-sm text-red-600">{errors.projeto_id.message}</p>
+                )}
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Trimestre *
+                </label>
+                <Controller
+                  name="periodo_referencia"
+                  control={control}
+                  render={({ field }) => (
+                    <div className="relative">
+                      <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                      <select
+                        {...field}
+                        className={`w-full pl-10 pr-3 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
+                          errors.periodo_referencia ? 'border-red-300' : 'border-gray-300'
+                        }`}
+                      >
+                        {trimestres.map((trimestre) => (
+                          <option key={trimestre.value} value={trimestre.value}>
+                            {trimestre.label}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
+                />
+                {errors.periodo_referencia && (
+                  <p className="mt-1 text-sm text-red-600">{errors.periodo_referencia.message}</p>
+                )}
+              </div>
+            </div>
+
+            {/* Meta e Valor Atual */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Meta *
+                </label>
+                <Controller
+                  name="meta"
+                  control={control}
+                  render={({ field }) => (
+                    <div className="relative">
+                      <Target className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                      <Input
+                        {...field}
+                        type="number"
+                        step="0.01"
+                        min="0"
+                        placeholder="0.00"
+                        className={`pl-10 ${errors.meta ? 'border-red-300' : ''}`}
+                        onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+                      />
+                    </div>
+                  )}
+                />
+                {errors.meta && (
+                  <p className="mt-1 text-sm text-red-600">{errors.meta.message}</p>
+                )}
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Valor Atual *
+                </label>
+                <Controller
+                  name="valor_actual"
+                  control={control}
+                  render={({ field }) => (
+                    <div className="relative">
+                      <Activity className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                      <Input
+                        {...field}
+                        type="number"
+                        step="0.01"
+                        min="0"
+                        placeholder="0.00"
+                        className={`pl-10 ${errors.valor_actual ? 'border-red-300' : ''}`}
+                        onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+                      />
+                    </div>
+                  )}
+                />
+                {errors.valor_actual && (
+                  <p className="mt-1 text-sm text-red-600">{errors.valor_actual.message}</p>
+                )}
+              </div>
+            </div>
+
+            {/* Indicador de Progresso */}
+            {meta > 0 && (
+              <div className="p-4 bg-gray-50 rounded-lg">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-sm font-medium text-gray-700">Progresso</span>
+                  <span className="text-sm font-bold text-gray-900">
+                    {progresso.toFixed(1)}%
+                  </span>
+                </div>
+                <div className="w-full bg-gray-200 rounded-full h-2">
+                  <div
+                    className={`h-2 rounded-full transition-all duration-300 ${
+                      progresso >= 90 ? 'bg-green-500' :
+                      progresso >= 70 ? 'bg-blue-500' :
+                      progresso >= 50 ? 'bg-yellow-500' : 'bg-red-500'
+                    }`}
+                    style={{ width: `${Math.min(progresso, 100)}%` }}
+                  />
+                </div>
+                <div className="flex justify-between text-xs text-gray-500 mt-1">
+                  <span>0</span>
+                  <span>{meta.toLocaleString()}</span>
+                </div>
+              </div>
+            )}
+
+            {/* Unidade e Fonte de Dados */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Unidade *
+                </label>
+                <Controller
+                  name="unidade"
+                  control={control}
+                  render={({ field }) => (
+                    <div>
+                      <Input
+                        {...field}
+                        placeholder="Ex: toneladas"
+                        className={errors.unidade ? 'border-red-300' : ''}
+                        list="unidades"
+                      />
+                      <datalist id="unidades">
+                        {unidadesComuns.map((unidade) => (
+                          <option key={unidade} value={unidade} />
+                        ))}
+                      </datalist>
+                    </div>
+                  )}
+                />
+                {errors.unidade && (
+                  <p className="mt-1 text-sm text-red-600">{errors.unidade.message}</p>
+                )}
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Fonte de Dados *
+                </label>
+                <Controller
+                  name="fonte_dados"
+                  control={control}
+                  render={({ field }) => (
+                    <div className="relative">
+                      <FileText className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                      <Input
+                        {...field}
+                        placeholder="Ex: Relatório trimestral T1"
+                        className={`pl-10 ${errors.fonte_dados ? 'border-red-300' : ''}`}
+                      />
+                    </div>
+                  )}
+                />
+                {errors.fonte_dados && (
+                  <p className="mt-1 text-sm text-red-600">{errors.fonte_dados.message}</p>
+                )}
+              </div>
+            </div>
+
+            {/* Botões */}
+            <div className="flex justify-end gap-3 pt-6 border-t border-gray-200">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={handleCancel}
+                disabled={isSubmitting}
+              >
+                Cancelar
+              </Button>
+              <Button
+                type="submit"
+                disabled={!isValid || isSubmitting}
+                className="flex items-center gap-2"
+              >
+                {isSubmitting ? (
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    {isEditing ? 'Atualizando...' : 'Criando...'}
+                  </>
+                ) : (
+                  <>
+                    {isEditing ? 'Atualizar' : 'Criar'} Indicador
+                  </>
+                )}
+              </Button>
+            </div>
+          </form>
         </div>
-      </FormSection>
-
-      <FormSection title="Metodologia e Fonte">
-        <FormGroup label="Fonte de Dados" required error={validationErrors.fonte_dados}>
-          <Input
-            name="fonte_dados"
-            value={formData.fonte_dados}
-            onChange={handleChange}
-            placeholder="Ex: Sistema de Monitoramento, Relatório Provincial"
-          />
-        </FormGroup>
-
-        <FormGroup label="Metodologia de Cálculo">
-          <TextArea
-            name="metodologia_calculo"
-            value={formData.metodologia_calculo}
-            onChange={handleChange}
-            placeholder="Descreva como o indicador é calculado"
-            rows={3}
-          />
-        </FormGroup>
-
-        <FormGroup label="Observações">
-          <TextArea
-            name="observacoes"
-            value={formData.observacoes}
-            onChange={handleChange}
-            placeholder="Observações adicionais"
-            rows={2}
-          />
-        </FormGroup>
-      </FormSection>
-    </FormModal>
+      </Card>
+    </div>
   );
 };
+
+export default IndicadorForm;
