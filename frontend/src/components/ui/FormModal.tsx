@@ -1,7 +1,7 @@
 import React, { ReactNode, useEffect } from 'react';
 import { X, Loader2 } from 'lucide-react';
-import Button from './Button';
-import Card from './Card';
+import { Button } from './Button';
+import { Card } from './Card';
 
 interface FormModalProps {
   isOpen: boolean;

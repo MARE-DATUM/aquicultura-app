@@ -126,7 +126,7 @@ const Login: React.FC = () => {
 
               <Button
                 type="submit"
-                loading={isLoading}
+                disabled={isLoading}
                 icon={<Shield className="h-5 w-5" />}
                 className="w-full shadow-glow hover:shadow-modern-lg transition-all duration-300"
                 size="lg"

@@ -1,56 +1,22 @@
-import React from 'react';
+import * as React from "react"
 
-interface TextAreaProps extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {
-  label?: string;
-  error?: string;
-}
+import { cn } from "@/lib/utils"
 
-const TextArea = React.forwardRef<HTMLTextAreaElement, TextAreaProps>(({
-  label,
-  error,
-  className = '',
-  disabled = false,
-  required = false,
-  rows = 4,
-  ...props
-}, ref) => {
-  const baseClasses = `
-    w-full px-3 py-2
-    bg-white border rounded-lg
-    text-gray-900 text-sm
-    focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent
-    disabled:bg-gray-50 disabled:text-gray-500 disabled:cursor-not-allowed
-    transition-all duration-200
-    resize-vertical
-  `;
-
-  const borderClasses = error
-    ? 'border-red-300 focus:ring-red-500'
-    : 'border-gray-300 hover:border-gray-400';
-
+const Textarea = React.forwardRef<
+  HTMLTextAreaElement,
+  React.ComponentProps<"textarea">
+>(({ className, ...props }, ref) => {
   return (
-    <div className="w-full">
-      {label && (
-        <label className="block text-sm font-medium text-gray-700 mb-1">
-          {label}
-          {required && <span className="text-red-500 ml-1">*</span>}
-        </label>
+    <textarea
+      className={cn(
+        "flex min-h-[60px] w-full rounded-md border border-input bg-transparent px-3 py-2 text-base shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 md:text-sm",
+        className
       )}
-      <textarea
-        ref={ref}
-        className={`${baseClasses} ${borderClasses} ${className}`}
-        disabled={disabled}
-        required={required}
-        rows={rows}
-        {...props}
-      />
-      {error && (
-        <p className="mt-1 text-xs text-red-600">{error}</p>
-      )}
-    </div>
-  );
-});
+      ref={ref}
+      {...props}
+    />
+  )
+})
+Textarea.displayName = "Textarea"
 
-TextArea.displayName = 'TextArea';
-
-export default TextArea;
+export { Textarea }

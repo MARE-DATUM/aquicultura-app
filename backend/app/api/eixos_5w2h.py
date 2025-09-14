@@ -94,3 +94,13 @@ def get_eixos_by_projeto_periodo(
     """Obtém eixos 5W2H agrupados por período para um projeto (todos os utilizadores)"""
     eixo_service = Eixo5W2HService(db)
     return eixo_service.get_eixos_by_projeto_periodo(projeto_id)
+
+
+@router.get("/stats")
+def get_eixos_stats(
+    current_user = Depends(get_current_active_user),
+    db: Session = Depends(get_db)
+):
+    """Obtém estatísticas de eixos 5W2H para dashboard"""
+    eixo_service = Eixo5W2HService(db)
+    return eixo_service.get_eixos_stats()

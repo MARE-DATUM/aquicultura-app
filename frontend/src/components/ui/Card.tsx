@@ -1,84 +1,76 @@
-import React from 'react';
+import * as React from "react"
 
-interface CardProps {
-  children: React.ReactNode;
-  className?: string;
-  padding?: 'none' | 'sm' | 'md' | 'lg';
-  hover?: boolean;
-}
+import { cn } from "@/lib/utils"
 
-interface CardHeaderProps {
-  children: React.ReactNode;
-  className?: string;
-}
+const Card = React.forwardRef<
+  HTMLDivElement,
+  React.HTMLAttributes<HTMLDivElement>
+>(({ className, ...props }, ref) => (
+  <div
+    ref={ref}
+    className={cn(
+      "rounded-xl border bg-card text-card-foreground shadow",
+      className
+    )}
+    {...props}
+  />
+))
+Card.displayName = "Card"
 
-interface CardContentProps {
-  children: React.ReactNode;
-  className?: string;
-}
+const CardHeader = React.forwardRef<
+  HTMLDivElement,
+  React.HTMLAttributes<HTMLDivElement>
+>(({ className, ...props }, ref) => (
+  <div
+    ref={ref}
+    className={cn("flex flex-col space-y-1.5 p-6", className)}
+    {...props}
+  />
+))
+CardHeader.displayName = "CardHeader"
 
-interface CardFooterProps {
-  children: React.ReactNode;
-  className?: string;
-}
+const CardTitle = React.forwardRef<
+  HTMLDivElement,
+  React.HTMLAttributes<HTMLDivElement>
+>(({ className, ...props }, ref) => (
+  <div
+    ref={ref}
+    className={cn("font-semibold leading-none tracking-tight", className)}
+    {...props}
+  />
+))
+CardTitle.displayName = "CardTitle"
 
-const CardComponent: React.FC<CardProps> = React.memo(({ 
-  children, 
-  className = '', 
-  padding = 'md',
-  hover = false 
-}) => {
-  const paddingClasses = {
-    none: '',
-    sm: 'p-4',
-    md: 'p-6',
-    lg: 'p-8'
-  };
-  
-  const baseClasses = 'gradient-card rounded-3xl border border-white border-opacity-20 backdrop-blur-sm';
-  const hoverClasses = hover ? 'hover-lift hover:shadow-modern-lg transition-all duration-300' : '';
-  const classes = `${baseClasses} ${paddingClasses[padding]} ${hoverClasses} ${className}`;
-  
-  return (
-    <div className={classes}>
-      {children}
-    </div>
-  );
-});
+const CardDescription = React.forwardRef<
+  HTMLDivElement,
+  React.HTMLAttributes<HTMLDivElement>
+>(({ className, ...props }, ref) => (
+  <div
+    ref={ref}
+    className={cn("text-sm text-muted-foreground", className)}
+    {...props}
+  />
+))
+CardDescription.displayName = "CardDescription"
 
-const CardHeader: React.FC<CardHeaderProps> = React.memo(({ children, className = '' }) => {
-  return (
-    <div className={`border-b border-gray-200 pb-4 mb-6 ${className}`}>
-      {children}
-    </div>
-  );
-});
+const CardContent = React.forwardRef<
+  HTMLDivElement,
+  React.HTMLAttributes<HTMLDivElement>
+>(({ className, ...props }, ref) => (
+  <div ref={ref} className={cn("p-6 pt-0", className)} {...props} />
+))
+CardContent.displayName = "CardContent"
 
-const CardContent: React.FC<CardContentProps> = React.memo(({ children, className = '' }) => {
-  return (
-    <div className={className}>
-      {children}
-    </div>
-  );
-});
+const CardFooter = React.forwardRef<
+  HTMLDivElement,
+  React.HTMLAttributes<HTMLDivElement>
+>(({ className, ...props }, ref) => (
+  <div
+    ref={ref}
+    className={cn("flex items-center p-6 pt-0", className)}
+    {...props}
+  />
+))
+CardFooter.displayName = "CardFooter"
 
-const CardFooter: React.FC<CardFooterProps> = React.memo(({ children, className = '' }) => {
-  return (
-    <div className={`border-t border-gray-200 pt-4 mt-6 ${className}`}>
-      {children}
-    </div>
-  );
-});
-
-CardHeader.displayName = 'CardHeader';
-CardContent.displayName = 'CardContent';
-CardFooter.displayName = 'CardFooter';
-
-// Create the compound component
-const Card = Object.assign(CardComponent, {
-  Header: CardHeader,
-  Content: CardContent,
-  Footer: CardFooter
-});
-
-export default Card;
+export { Card, CardHeader, CardFooter, CardTitle, CardDescription, CardContent }

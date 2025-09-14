@@ -1,10 +1,13 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { MapContainer, TileLayer, GeoJSON, CircleMarker, Popup, Tooltip } from 'react-leaflet';
 import { Card, Button } from './ui';
+import ResponsiveMap from './map/ResponsiveMap';
+import ResponsiveContainer from './ui/ResponsiveContainer';
 import { MapPin, Eye, Filter } from 'lucide-react';
 import { apiService } from '../services/api';
 import { formatCurrency } from '../utils';
 import { ProjetoFilters } from '../types/simple';
+import useResponsiveMap from '../hooks/useResponsiveMap';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 import provinciasGeoData from '../data/provincias-geo-accurate.json';

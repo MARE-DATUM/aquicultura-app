@@ -10,6 +10,7 @@ from datetime import datetime
 from app.db.database import get_db, engine
 from app.core.deps import require_root
 from app.models.user import User
+from app.core.rate_limiter import login_attempts
 import subprocess
 import shutil
 
@@ -388,4 +389,47 @@ def get_database_stats(
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Erro ao obter estatísticas: {str(e)}"
+        )
+
+
+@router.post("/rate-limit/clear")
+def clear_rate_limits(
+    current_user = Depends(require_root),
+    db: Session = Depends(get_db)
+):
+    """Limpa todos os rate limits de login (apenas ROOT)"""
+    try:
+        # Limpar o dicionário de tentativas de login
+        login_attempts.clear()
+        
+        return {
+            "message": "Rate limits limpos com sucesso",
+            "cleared_at": datetime.utcnow().isoformat(),
+            "total_cleared": len(login_attempts)
+        }
+        
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Erro ao limpar rate limits: {str(e)}"
+        )
+
+
+@router.get("/rate-limit/status")
+def get_rate_limit_status(
+    current_user = Depends(require_root),
+    db: Session = Depends(get_db)
+):
+    """Obtém status dos rate limits (apenas ROOT)"""
+    try:
+        return {
+            "total_ips_blocked": len(login_attempts),
+            "blocked_ips": list(login_attempts.keys()),
+            "details": login_attempts
+        }
+        
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Erro ao obter status dos rate limits: {str(e)}"
         )

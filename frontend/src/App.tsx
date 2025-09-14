@@ -1,7 +1,7 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
-import Layout from './components/Layout';
+import LayoutResponsive from './components/LayoutResponsive';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import Projetos from './pages/Projetos';
@@ -24,9 +24,9 @@ function App() {
             path="/"
             element={
               <ProtectedRoute>
-                <Layout>
+                <LayoutResponsive>
                   <Dashboard />
-                </Layout>
+                </LayoutResponsive>
               </ProtectedRoute>
             }
           />
@@ -34,9 +34,9 @@ function App() {
             path="/projetos"
             element={
               <ProtectedRoute>
-                <Layout>
+                <LayoutResponsive>
                   <Projetos />
-                </Layout>
+                </LayoutResponsive>
               </ProtectedRoute>
             }
           />
@@ -44,9 +44,9 @@ function App() {
             path="/indicadores"
             element={
               <ProtectedRoute>
-                <Layout>
+                <LayoutResponsive>
                   <Indicadores />
-                </Layout>
+                </LayoutResponsive>
               </ProtectedRoute>
             }
           />
@@ -54,9 +54,9 @@ function App() {
             path="/eixos-5w2h"
             element={
               <ProtectedRoute>
-                <Layout>
+                <LayoutResponsive>
                   <Eixos5W2H />
-                </Layout>
+                </LayoutResponsive>
               </ProtectedRoute>
             }
           />
@@ -64,9 +64,9 @@ function App() {
             path="/licenciamentos"
             element={
               <ProtectedRoute>
-                <Layout>
+                <LayoutResponsive>
                   <Licenciamentos />
-                </Layout>
+                </LayoutResponsive>
               </ProtectedRoute>
             }
           />
@@ -74,9 +74,9 @@ function App() {
             path="/mapa"
             element={
               <ProtectedRoute>
-                <Layout>
+                <LayoutResponsive>
                   <Mapa />
-                </Layout>
+                </LayoutResponsive>
               </ProtectedRoute>
             }
           />
@@ -84,9 +84,9 @@ function App() {
             path="/utilizadores"
             element={
               <ProtectedRoute requiredRole={USER_ROLES.ROOT}>
-                <Layout>
+                <LayoutResponsive>
                   <Utilizadores />
-                </Layout>
+                </LayoutResponsive>
               </ProtectedRoute>
             }
           />
@@ -94,9 +94,9 @@ function App() {
             path="/auditoria"
             element={
               <ProtectedRoute requiredRole={USER_ROLES.ROOT}>
-                <Layout>
+                <LayoutResponsive>
                   <Auditoria />
-                </Layout>
+                </LayoutResponsive>
               </ProtectedRoute>
             }
           />

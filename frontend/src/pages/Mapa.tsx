@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Card, Button, Input, Badge, PageHeader } from '../components/ui';
 import { Search, Filter, Download, MapPin, Eye } from 'lucide-react';
-import MapaProvincias from '../components/MapaProvincias';
+import MapaProvinciasResponsivo from '../components/MapaProvinciasResponsivo';
 import { usePermissions } from '../hooks/usePermissions';
 import { ProjetoFilters } from '../types/simple';
 
@@ -155,10 +155,11 @@ const Mapa: React.FC = () => {
         </div>
       </Card>
 
-      {/* Mapa */}
-      <MapaProvincias
+      {/* Mapa Responsivo */}
+      <MapaProvinciasResponsivo
         onProvinciaClick={handleProvinciaClick}
         filtros={filtros}
+        showDetailedPopups={true}
       />
 
       {/* Detalhes da Província Selecionada */}

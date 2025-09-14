@@ -32,7 +32,7 @@ import {
 } from 'lucide-react';
 import { apiService } from '../services/api';
 import type { DashboardStats, MapaProvincia } from '../types/simple';
-import { PageHeader, SkeletonCard, Button, Card } from '../components/ui';
+import { PageHeader, Skeleton, Button, Card, ResponsiveGrid } from '../components/ui';
 import { AdminExport } from '../components/AdminExport';
 import { useAuth } from '../contexts/AuthContext';
 
@@ -87,12 +87,18 @@ const Dashboard: React.FC = () => {
         <div className="p-6 space-y-6">
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
             {Array.from({ length: 4 }).map((_, index) => (
-              <SkeletonCard key={index} />
+              <Card key={index} className="p-6">
+                <Skeleton className="h-4 w-3/4 mb-2" />
+                <Skeleton className="h-4 w-1/2" />
+              </Card>
             ))}
           </div>
           <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
             {Array.from({ length: 4 }).map((_, index) => (
-              <SkeletonCard key={index} />
+              <Card key={index} className="p-6">
+                <Skeleton className="h-4 w-3/4 mb-2" />
+                <Skeleton className="h-4 w-1/2" />
+              </Card>
             ))}
           </div>
         </div>
@@ -248,7 +254,10 @@ const Dashboard: React.FC = () => {
       )}
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+      <ResponsiveGrid 
+        cols={{ default: 1, sm: 2, lg: 4 }}
+        gap="md"
+      >
         <StatCard
           title="Total de Projetos"
           value={stats.resumo.total_projetos}
@@ -282,10 +291,13 @@ const Dashboard: React.FC = () => {
           trend="neutral"
           trendValue={`${stats.licenciamentos.por_status.APROVADO || 0} aprovados`}
         />
-      </div>
+      </ResponsiveGrid>
 
       {/* Charts Grid */}
-      <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+      <ResponsiveGrid 
+        cols={{ default: 1, lg: 2 }}
+        gap="lg"
+      >
         {/* Projetos por Estado */}
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
           <div className="flex items-center justify-between mb-6">
@@ -439,7 +451,7 @@ const Dashboard: React.FC = () => {
             </BarChart>
           </ResponsiveContainer>
         </div>
-      </div>
+      </ResponsiveGrid>
 
       {/* Mapa das Províncias - Resumo */}
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
@@ -452,7 +464,10 @@ const Dashboard: React.FC = () => {
             <MapPin className="h-5 w-5 text-blue-600" />
           </div>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4">
+        <ResponsiveGrid 
+          cols={{ default: 1, sm: 2, md: 3, lg: 4, xl: 5 }}
+          gap="md"
+        >
           {mapaData.map((provincia) => (
             <div key={provincia.id} className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-all duration-200 hover:border-blue-300 group">
               <div className="flex items-center justify-between mb-3">
@@ -499,7 +514,7 @@ const Dashboard: React.FC = () => {
               </div>
             </div>
           ))}
-        </div>
+        </ResponsiveGrid>
       </div>
       </div>
     </>

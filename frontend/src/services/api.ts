@@ -284,6 +284,11 @@ class ApiService {
     await this.api.delete(`/eixos-5w2h/${eixoId}`);
   }
 
+  async getEixos5W2HStats(): Promise<any> {
+    const response: AxiosResponse<any> = await this.api.get('/eixos-5w2h/stats');
+    return response.data;
+  }
+
   async getEixosByProjetoPeriodo(projetoId: number): Promise<Record<string, Eixo5W2H[]>> {
     const response: AxiosResponse<Record<string, Eixo5W2H[]>> = await this.api.get(`/eixos-5w2h/projeto/${projetoId}/periodos`);
     return response.data;
