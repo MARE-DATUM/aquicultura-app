@@ -192,7 +192,10 @@ const ResponsiveMap: React.FC<ResponsiveMapProps> = ({
           zoom={config.zoomLevel}
           style={{ height: '100%', width: '100%' }}
           zoomControl={false} // We'll use custom controls
-          whenCreated={handleMapCreated}
+          whenReady={() => {
+            // Map is ready, but we need to get the map instance differently
+            // The handleMapCreated will be called via useMap hook
+          }}
           className="z-0"
         >
           <TileLayer

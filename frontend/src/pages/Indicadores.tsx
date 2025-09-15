@@ -646,7 +646,7 @@ const Indicadores: React.FC = () => {
                           </div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
-                          <Badge variant="info">
+                          <Badge variant="default">
                             {indicador.periodo_referencia}
                           </Badge>
                         </td>
@@ -739,7 +739,7 @@ const Indicadores: React.FC = () => {
                     return (
                       <Button
                         key={page}
-                        variant={currentPage === page ? "primary" : "outline"}
+                        variant={currentPage === page ? "default" : "outline"}
                         size="sm"
                         onClick={() => handlePageChange(page)}
                         className="w-8 h-8 p-0"

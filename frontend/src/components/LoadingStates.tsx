@@ -1,6 +1,6 @@
 import React from 'react';
 import { Loader2, RefreshCw, AlertCircle } from 'lucide-react';
-import { Card, Button } from './ui';
+import { Card, CustomButton as Button } from './ui';
 
 interface LoadingSpinnerProps {
   size?: 'sm' | 'md' | 'lg';

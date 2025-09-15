@@ -197,7 +197,7 @@ export default function Licenciamentos() {
           title="Licenciamentos Fast-Track"
           description="Gestão e acompanhamento de licenciamentos"
         />
-        <Alert variant="danger">
+        <Alert variant="destructive">
           <AlertCircle className="h-4 w-4" />
           <div>
             <h3 className="font-medium">Erro ao carregar dados</h3>

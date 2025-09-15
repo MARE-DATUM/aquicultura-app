@@ -1,6 +1,6 @@
 import React, { Component, ErrorInfo, ReactNode } from 'react';
 import { AlertTriangle, RefreshCw, Home } from 'lucide-react';
-import { Button, Card } from './ui';
+import { CustomButton as Button, Card } from './ui';
 
 interface Props {
   children: ReactNode;
@@ -100,7 +100,7 @@ class ErrorBoundary extends Component<Props, State> {
                   Tentar Novamente
                 </Button>
                 <Button
-                  variant="primary"
+                  variant="default"
                   onClick={this.handleGoHome}
                   icon={<Home className="h-4 w-4" />}
                 >

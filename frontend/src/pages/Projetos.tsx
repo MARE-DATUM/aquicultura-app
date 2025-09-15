@@ -526,14 +526,14 @@ const Projetos: React.FC = () => {
       {/* Alerts de feedback */}
       {deleteError && (
         <div className="fixed top-4 right-4 z-50">
-          <Alert variant="danger">
+          <Alert variant="destructive">
             {deleteError}
           </Alert>
         </div>
       )}
       {deleteSuccess && (
         <div className="fixed top-4 right-4 z-50">
-          <Alert variant="success">
+          <Alert variant="default">
             {deleteSuccess}
           </Alert>
         </div>

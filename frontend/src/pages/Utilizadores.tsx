@@ -218,7 +218,7 @@ export default function Utilizadores() {
           title="Gestão de Utilizadores"
           description="Administração de utilizadores e permissões do sistema"
         />
-        <Alert variant="danger">
+        <Alert variant="destructive">
           <AlertCircle className="h-4 w-4" />
           <div>
             <h3 className="font-medium">Erro ao carregar dados</h3>

@@ -233,7 +233,7 @@ const Dashboard: React.FC = () => {
             </Button>
             {user?.role === 'ROOT' && (
               <Button 
-                variant="primary" 
+                variant="default" 
                 onClick={() => setShowExport(!showExport)}
               >
                 <Database className="h-4 w-4 mr-2" />

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { Shield, Fish, Lock, Mail, Loader2 } from 'lucide-react';
-import { Button, Card, Input, Alert } from '../components/ui';
+import { CustomButton as Button, Card, CustomInput as Input, Alert } from '../components/ui';
 
 const Login: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -119,7 +119,7 @@ const Login: React.FC = () => {
             />
 
             {error && (
-              <Alert variant="danger">
+              <Alert variant="destructive">
                 {error}
               </Alert>
             )}

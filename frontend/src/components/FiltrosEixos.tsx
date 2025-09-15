@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Button, Input, Select, Card } from './ui';
+import { Button, Input, CustomSelect as Select, Card } from './ui';
 import { Filter, Search, X, RefreshCw } from 'lucide-react';
 import type { Projeto, Periodo5W2H } from '../types/simple';
 

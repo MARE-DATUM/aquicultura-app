@@ -125,12 +125,12 @@ export const AdminExport: React.FC = () => {
     <div className="space-y-6">
       {/* Alerts */}
       {error && (
-        <Alert variant="danger">
+        <Alert variant="destructive">
           {error}
         </Alert>
       )}
       {success && (
-        <Alert variant="success">
+        <Alert variant="default">
           {success}
         </Alert>
       )}

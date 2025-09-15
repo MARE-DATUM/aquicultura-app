@@ -5,7 +5,7 @@ import {
   FormSection, 
   FormGroup, 
   Input, 
-  Select, 
+  CustomSelect as Select, 
   TextArea,
   Alert 
 } from '../ui';

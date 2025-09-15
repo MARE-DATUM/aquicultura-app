@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Button, Input, Select, TextArea, Card } from './ui';
+import { CustomButton as Button, CustomInput as Input, CustomSelect as Select, CustomTextArea as TextArea, Card } from './ui';
 import { Plus, Trash2, Calendar, CheckCircle } from 'lucide-react';
 import type { Eixo5W2H, Projeto, Periodo5W2H } from '../types/simple';
 

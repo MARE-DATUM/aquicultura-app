@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Card } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
-import { Input } from '@/components/ui/Input';
+import { CustomInput as Input } from '@/components/ui/CustomInput';
 import { Select } from '@/components/ui/Select';
 import { Skeleton } from '@/components/ui/Skeleton';
 import { Alert } from '@/components/ui/Alert';
@@ -198,7 +198,7 @@ const AuditoriaSimple: React.FC = () => {
           </div>
         </div>
         
-        <Alert variant="danger">
+        <Alert variant="destructive">
           <Shield className="h-4 w-4" />
           <div>
             <h3 className="font-medium">Erro ao carregar dados</h3>
@@ -299,26 +299,26 @@ const AuditoriaSimple: React.FC = () => {
               icon={<Search className="h-4 w-4" />}
             />
           </div>
-          <Select
+          <select
             value={selectedAction}
             onChange={(e) => setSelectedAction(e.target.value)}
-            className="w-full md:w-48"
+            className="w-full md:w-48 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             <option value="">Todas as ações</option>
             {stats && Object.keys(stats.por_acao).map(acao => (
               <option key={acao} value={acao}>{acao}</option>
             ))}
-          </Select>
-          <Select
+          </select>
+          <select
             value={selectedEntity}
             onChange={(e) => setSelectedEntity(e.target.value)}
-            className="w-full md:w-48"
+            className="w-full md:w-48 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             <option value="">Todas as entidades</option>
             {stats && Object.keys(stats.por_entidade).map(entidade => (
               <option key={entidade} value={entidade}>{entidade}</option>
             ))}
-          </Select>
+          </select>
         </div>
       </Card>
 

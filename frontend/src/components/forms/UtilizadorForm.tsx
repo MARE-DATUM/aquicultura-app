@@ -5,7 +5,7 @@ import {
   FormSection, 
   FormGroup, 
   Input, 
-  Select,
+  CustomSelect as Select,
   Alert 
 } from '../ui';
 import type { User } from '../../types/simple';

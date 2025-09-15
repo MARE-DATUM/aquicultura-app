@@ -252,7 +252,7 @@ const Eixos5W2H: React.FC = () => {
               canCreate() ? {
                 label: 'Criar Primeiro Eixo',
                 onClick: handleNovoEixo,
-                variant: 'primary' as const
+                variant: 'default' as const
               } : undefined
             }
           />
